@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="page-header">
+    <div>
+        <p class="eyebrow">Historical State</p>
+        <h2>Snapshots</h2>
+        <p>Stored TrueAegis platform snapshots.</p>
+    </div>
+</section>
+
+<section class="panel">
+    {% if snapshots %}
+    <div class="table-wrap">
+        <table>
+            <tr>
+                <th>Snapshot</th>
+                <th>Created</th>
+                <th>Hosts</th>
+                <th>Findings</th>
+                <th>Critical</th>
+                <th>High</th>
+                <th>Confirmed</th>
+                <th>Correlations</th>
+            </tr>
+            {% for item in snapshots %}
+            <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.created }}</td>
+                <td>{{ item.hosts }}</td>
+                <td>{{ item.findings }}</td>
+                <td>{{ item.critical }}</td>
+                <td>{{ item.high }}</td>
+                <td>{{ item.confirmed }}</td>
+                <td>{{ item.correlations }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% else %}
+    <p class="muted">No snapshots found. Run <code>trueaegis --snapshot</code>.</p>
+    {% endif %}
+</section>
+{% endblock %}

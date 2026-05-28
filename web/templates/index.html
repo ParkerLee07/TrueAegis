@@ -1,0 +1,122 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="page-header">
+    <div>
+        <p class="eyebrow">Local Exposure Intelligence</p>
+        <h2>Environment Dashboard</h2>
+        <p>Latest NetSniper telemetry enriched by TrueAegis validation, reporting, snapshots, and deltas.</p>
+    </div>
+
+    <div class="header-actions">
+        <form method="POST" action="/run/trueaegis_report">
+            <button type="submit">Generate Report</button>
+        </form>
+        <form method="POST" action="/run/trueaegis_snapshot">
+            <button type="submit" class="secondary">Save Snapshot</button>
+        </form>
+    </div>
+</section>
+
+<section class="metric-grid">
+    <div class="metric-card">
+        <span>Hosts</span>
+        <strong>{{ host_count }}</strong>
+    </div>
+    <div class="metric-card">
+        <span>Findings</span>
+        <strong>{{ finding_count }}</strong>
+    </div>
+    <div class="metric-card danger">
+        <span>Critical</span>
+        <strong>{{ priority_counts.get("CRITICAL", 0) }}</strong>
+    </div>
+    <div class="metric-card warn">
+        <span>High</span>
+        <strong>{{ priority_counts.get("HIGH", 0) }}</strong>
+    </div>
+    <div class="metric-card good">
+        <span>Confirmed</span>
+        <strong>{{ validation_counts.get("CONFIRMED", 0) }}</strong>
+    </div>
+    <div class="metric-card info">
+        <span>Correlations</span>
+        <strong>{{ correlation_count }}</strong>
+    </div>
+</section>
+
+<section class="content-grid">
+    <div class="panel wide">
+        <div class="panel-title">
+            <h3>Attack Surface Narrative</h3>
+            <span class="pill">Intelligence</span>
+        </div>
+        <p class="narrative">{{ narrative }}</p>
+    </div>
+
+    <div class="panel">
+        <div class="panel-title">
+            <h3>Observed Services</h3>
+            <span class="pill">Latest Scan</span>
+        </div>
+
+        {% if services %}
+        <div class="service-list">
+            {% for service, count in services %}
+            <div class="service-row">
+                <span>{{ service }}</span>
+                <strong>{{ count }}</strong>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="muted">No services found yet.</p>
+        {% endif %}
+    </div>
+
+    <div class="panel">
+        <div class="panel-title">
+            <h3>Latest Delta</h3>
+            <span class="pill">Change Tracking</span>
+        </div>
+
+        {% if delta %}
+        <div class="delta-grid">
+            <div><span>New</span><strong>{{ delta.get("new_findings", [])|length }}</strong></div>
+            <div><span>Removed</span><strong>{{ delta.get("removed_findings", [])|length }}</strong></div>
+            <div><span>Changed</span><strong>{{ delta.get("changed_findings", [])|length }}</strong></div>
+            <div><span>Risk Δ</span><strong>{{ delta.get("risk_score_change", 0) }}</strong></div>
+        </div>
+        {% else %}
+        <p class="muted">No delta comparison has been created yet.</p>
+        {% endif %}
+    </div>
+
+    <div class="panel wide">
+        <div class="panel-title">
+            <h3>Quick Actions</h3>
+            <span class="pill">Control</span>
+        </div>
+
+        <div class="action-grid">
+            <form method="POST" action="/run/trueaegis_validate">
+                <button type="submit">Run Validation</button>
+            </form>
+            <form method="POST" action="/run/trueaegis_report">
+                <button type="submit">Generate Full Report</button>
+            </form>
+            <form method="POST" action="/run/trueaegis_snapshot">
+                <button type="submit">Save Snapshot</button>
+            </form>
+            <form method="POST" action="/run/trueaegis_delta">
+                <button type="submit">Compare Snapshots</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="panel wide muted-panel">
+        <p><strong>Latest scan:</strong> {{ scan_path or "No NetSniper scan found" }}</p>
+        <p><strong>Latest snapshot:</strong> {{ snapshot_path or "No snapshot found" }}</p>
+        <p><strong>Latest validation:</strong> {{ validation_path or "No validation found" }}</p>
+    </div>
+</section>
+{% endblock %}

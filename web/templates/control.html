@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="page-header">
+    <div>
+        <p class="eyebrow">Allowed Local Actions</p>
+        <h2>Control Center</h2>
+        <p>Run approved TrueAegis workflows from the local dashboard.</p>
+    </div>
+</section>
+
+<section class="notice">
+    <strong>Local-only command runner:</strong>
+    These buttons execute predefined allowlisted commands only. No arbitrary shell commands are accepted.
+</section>
+
+<section class="control-grid">
+    {% for key, action in actions.items() %}
+    <div class="panel control-card">
+        <h3>{{ action.label }}</h3>
+        <p>{{ action.note }}</p>
+        <code>{{ " ".join(action.command) }}</code>
+        <form method="POST" action="/run/{{ key }}">
+            <button type="submit">Run Action</button>
+        </form>
+    </div>
+    {% endfor %}
+</section>
+{% endblock %}

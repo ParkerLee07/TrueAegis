@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="page-header">
+    <div>
+        <p class="eyebrow">Latest NetSniper Telemetry</p>
+        <h2>Findings</h2>
+        <p>Structured findings currently available to TrueAegis.</p>
+    </div>
+</section>
+
+<section class="panel">
+    <p class="source-line"><strong>Source:</strong> {{ scan_path or "No scan found" }}</p>
+
+    {% if findings %}
+    <div class="table-wrap">
+        <table>
+            <tr>
+                <th>Host</th>
+                <th>Device</th>
+                <th>Finding</th>
+                <th>Service</th>
+                <th>Port</th>
+                <th>Evidence</th>
+            </tr>
+            {% for item in findings %}
+            <tr>
+                <td>{{ item.host }}</td>
+                <td>{{ item.device_type }}</td>
+                <td><span class="badge">{{ item.id }}</span><br>{{ item.name }}</td>
+                <td>{{ item.service }}</td>
+                <td>{{ item.port }}</td>
+                <td>{{ item.evidence }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% else %}
+    <p class="muted">No findings found.</p>
+    {% endif %}
+</section>
+{% endblock %}

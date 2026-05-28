@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="page-header">
+    <div>
+        <p class="eyebrow">Command Output</p>
+        <h2>{{ filename }}</h2>
+    </div>
+</section>
+
+<section class="panel">
+    <pre>{{ content }}</pre>
+</section>
+{% endblock %}

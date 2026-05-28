@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TrueAegis</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="brand-block">
+            <div class="brand-icon">TA</div>
+            <div>
+                <h1>TrueAegis</h1>
+                <p>Exposure Intelligence</p>
+            </div>
+        </div>
+
+        <nav class="nav-links">
+            <a href="/" class="nav-link">Dashboard</a>
+            <a href="/control" class="nav-link">Control Center</a>
+            <a href="/findings" class="nav-link">Findings</a>
+            <a href="/snapshots" class="nav-link">Snapshots</a>
+            <a href="/deltas" class="nav-link">Deltas</a>
+            <a href="/reports" class="nav-link">Reports</a>
+            <a href="/logs" class="nav-link">Logs</a>
+        </nav>
+
+        <div class="sidebar-status">
+            <div class="status-dot"></div>
+            <div>
+                <strong>Local Mode</strong>
+                <span>127.0.0.1:8088</span>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <section class="flash-wrap">
+            {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </section>
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-card">
+            <div class="loading-shield">TA</div>
+            <h2>TrueAegis is working...</h2>
+            <p id="loadingMessage">Running selected action. This may take a moment.</p>
+            <div class="progress-shell">
+                <div class="progress-bar"></div>
+            </div>
+            <p class="loading-subtext">Do not refresh this page. Results and logs will appear when the action completes.</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

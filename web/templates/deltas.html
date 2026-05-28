@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="page-header">
+    <div>
+        <p class="eyebrow">Exposure Drift</p>
+        <h2>Deltas</h2>
+        <p>Changes between TrueAegis snapshots.</p>
+    </div>
+</section>
+
+<section class="panel">
+    {% if deltas %}
+    <div class="table-wrap">
+        <table>
+            <tr>
+                <th>Delta</th>
+                <th>Created</th>
+                <th>Previous</th>
+                <th>Current</th>
+                <th>New</th>
+                <th>Removed</th>
+                <th>Changed</th>
+                <th>Risk Δ</th>
+            </tr>
+            {% for item in deltas %}
+            <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.created }}</td>
+                <td>{{ item.previous }}</td>
+                <td>{{ item.current }}</td>
+                <td>{{ item.new_count }}</td>
+                <td>{{ item.removed_count }}</td>
+                <td>{{ item.changed_count }}</td>
+                <td>{{ item.risk_change }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% else %}
+    <p class="muted">No deltas found. Run <code>trueaegis --delta</code> after creating at least two snapshots.</p>
+    {% endif %}
+</section>
+{% endblock %}
