@@ -162,7 +162,7 @@ It includes:
 Clone the repository:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/TrueAegis.git
+git clone https://github.com/parkerlee07/TrueAegis.git
 cd TrueAegis
 ```
 
@@ -267,27 +267,6 @@ trueaegis --delta
 7. Save snapshot
 8. Compare future snapshots
 9. Review dashboard and reports
-```
-
----
-
-## Screenshots
-
-Add your screenshots here:
-
-```text
-screenshots/dashboard.png
-screenshots/terminal.png
-screenshots/report.png
-screenshots/control-center.png
-```
-
-Example Markdown:
-
-```md
-![Dashboard](screenshots/dashboard.png)
-![Terminal](screenshots/terminal.png)
-![Report](screenshots/report.png)
 ```
 
 ---
