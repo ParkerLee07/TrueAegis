@@ -1,0 +1,2050 @@
+{
+  "FTP_EXPOSED": {
+    "display_name": "FTP service exposed",
+    "service": "ftp",
+    "ports": [
+      21
+    ],
+    "category": "File Transfer",
+    "exploitability": 5,
+    "impact": 5,
+    "priority": 5,
+    "risk": "FTP exposure may indicate often used for legacy file movement or embedded device management. Risk themes include plaintext credentials, anonymous access, legacy file exposure.",
+    "threats": [
+      "plaintext credentials",
+      "anonymous access",
+      "legacy file exposure"
+    ],
+    "business_context": "Often used for legacy file movement or embedded device management.",
+    "safe_validation": [
+      "banner grab",
+      "anonymous login check"
+    ],
+    "remediation": [
+      "Confirm whether FTP exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 21 TARGET",
+      "Review whether port(s) 21 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "FTP was observed as part of the environment attack surface.",
+        "FTP may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of FTP contributes to the environment's file transfer exposure."
+      ],
+      "technical": [
+        "Observed port(s): 21.",
+        "Primary validation opportunities include: banner grab, anonymous login check.",
+        "Related risk themes: plaintext credentials, anonymous access, legacy file exposure."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "File Transfer"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "SSH_EXPOSED": {
+    "display_name": "SSH service exposed",
+    "service": "ssh",
+    "ports": [
+      22
+    ],
+    "category": "Remote Access",
+    "exploitability": 8,
+    "impact": 8,
+    "priority": 8,
+    "risk": "SSH exposure may indicate common administrative access service for linux and network devices. Risk themes include credential attacks, remote shell access, administrative exposure.",
+    "threats": [
+      "credential attacks",
+      "remote shell access",
+      "administrative exposure"
+    ],
+    "business_context": "Common administrative access service for Linux and network devices.",
+    "safe_validation": [
+      "banner grab",
+      "auth method review"
+    ],
+    "remediation": [
+      "Confirm whether SSH exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 22 TARGET",
+      "Review whether port(s) 22 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "SSH was observed as part of the environment attack surface.",
+        "SSH may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of SSH contributes to the environment's remote access exposure."
+      ],
+      "technical": [
+        "Observed port(s): 22.",
+        "Primary validation opportunities include: banner grab, auth method review.",
+        "Related risk themes: credential attacks, remote shell access, administrative exposure."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Remote Access"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "TELNET_EXPOSED": {
+    "display_name": "TELNET service exposed",
+    "service": "telnet",
+    "ports": [
+      23
+    ],
+    "category": "Legacy Remote Access",
+    "exploitability": 10,
+    "impact": 8,
+    "priority": 10,
+    "risk": "TELNET exposure may indicate usually indicates legacy network, camera, printer, or embedded device administration. Risk themes include plaintext credentials, legacy management, device takeover.",
+    "threats": [
+      "plaintext credentials",
+      "legacy management",
+      "device takeover"
+    ],
+    "business_context": "Usually indicates legacy network, camera, printer, or embedded device administration.",
+    "safe_validation": [
+      "banner grab",
+      "connectivity check"
+    ],
+    "remediation": [
+      "Confirm whether TELNET exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 23 TARGET",
+      "Review whether port(s) 23 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "TELNET was observed as part of the environment attack surface.",
+        "TELNET may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of TELNET contributes to the environment's legacy remote access exposure."
+      ],
+      "technical": [
+        "Observed port(s): 23.",
+        "Primary validation opportunities include: banner grab, connectivity check.",
+        "Related risk themes: plaintext credentials, legacy management, device takeover."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Legacy Remote Access"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "SMTP_EXPOSED": {
+    "display_name": "SMTP service exposed",
+    "service": "smtp",
+    "ports": [
+      25,
+      465,
+      587
+    ],
+    "category": "Mail",
+    "exploitability": 5,
+    "impact": 5,
+    "priority": 5,
+    "risk": "SMTP exposure may indicate mail services may expose business communication infrastructure. Risk themes include open relay, mail spoofing, credential attacks.",
+    "threats": [
+      "open relay",
+      "mail spoofing",
+      "credential attacks"
+    ],
+    "business_context": "Mail services may expose business communication infrastructure.",
+    "safe_validation": [
+      "banner grab",
+      "STARTTLS check"
+    ],
+    "remediation": [
+      "Confirm whether SMTP exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 25 TARGET",
+      "Review whether port(s) 25, 465, 587 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "SMTP was observed as part of the environment attack surface.",
+        "SMTP may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of SMTP contributes to the environment's mail exposure."
+      ],
+      "technical": [
+        "Observed port(s): 25, 465, 587.",
+        "Primary validation opportunities include: banner grab, STARTTLS check.",
+        "Related risk themes: open relay, mail spoofing, credential attacks."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Mail"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "DNS_EXPOSED": {
+    "display_name": "DNS service exposed",
+    "service": "dns",
+    "ports": [
+      53
+    ],
+    "category": "Network Infrastructure",
+    "exploitability": 5,
+    "impact": 5,
+    "priority": 5,
+    "risk": "DNS exposure may indicate dns exposure can reveal internal naming and infrastructure layout. Risk themes include zone transfer, internal enumeration, amplification.",
+    "threats": [
+      "zone transfer",
+      "internal enumeration",
+      "amplification"
+    ],
+    "business_context": "DNS exposure can reveal internal naming and infrastructure layout.",
+    "safe_validation": [
+      "version query",
+      "zone transfer check if authorized"
+    ],
+    "remediation": [
+      "Confirm whether DNS exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 53 TARGET",
+      "Review whether port(s) 53 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "DNS was observed as part of the environment attack surface.",
+        "DNS may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of DNS contributes to the environment's network infrastructure exposure."
+      ],
+      "technical": [
+        "Observed port(s): 53.",
+        "Primary validation opportunities include: version query, zone transfer check if authorized.",
+        "Related risk themes: zone transfer, internal enumeration, amplification."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Network Infrastructure"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "HTTP_EXPOSED": {
+    "display_name": "HTTP service exposed",
+    "service": "http",
+    "ports": [
+      80,
+      8080,
+      8000,
+      8888
+    ],
+    "category": "Web Services",
+    "exploitability": 4,
+    "impact": 5,
+    "priority": 5,
+    "risk": "HTTP exposure may indicate web services often represent business applications, admin consoles, or appliance uis. Risk themes include admin portal exposure, default pages, unencrypted traffic.",
+    "threats": [
+      "admin portal exposure",
+      "default pages",
+      "unencrypted traffic"
+    ],
+    "business_context": "Web services often represent business applications, admin consoles, or appliance UIs.",
+    "safe_validation": [
+      "HTTP title",
+      "headers",
+      "directory listing indicators"
+    ],
+    "remediation": [
+      "Confirm whether HTTP exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 80 TARGET",
+      "Review whether port(s) 80, 8080, 8000, 8888 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "HTTP was observed as part of the environment attack surface.",
+        "HTTP may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of HTTP contributes to the environment's web services exposure."
+      ],
+      "technical": [
+        "Observed port(s): 80, 8080, 8000, 8888.",
+        "Primary validation opportunities include: HTTP title, headers, directory listing indicators.",
+        "Related risk themes: admin portal exposure, default pages, unencrypted traffic."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Web Services"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "HTTPS_EXPOSED": {
+    "display_name": "HTTPS service exposed",
+    "service": "https",
+    "ports": [
+      443,
+      8443
+    ],
+    "category": "Web Services",
+    "exploitability": 4,
+    "impact": 5,
+    "priority": 5,
+    "risk": "HTTPS exposure may indicate https services may host production web apps, portals, dashboards, or device management. Risk themes include weak TLS, admin portal exposure, login exposure.",
+    "threats": [
+      "weak TLS",
+      "admin portal exposure",
+      "login exposure"
+    ],
+    "business_context": "HTTPS services may host production web apps, portals, dashboards, or device management.",
+    "safe_validation": [
+      "TLS version check",
+      "headers",
+      "certificate metadata"
+    ],
+    "remediation": [
+      "Confirm whether HTTPS exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 443 TARGET",
+      "Review whether port(s) 443, 8443 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "HTTPS was observed as part of the environment attack surface.",
+        "HTTPS may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of HTTPS contributes to the environment's web services exposure."
+      ],
+      "technical": [
+        "Observed port(s): 443, 8443.",
+        "Primary validation opportunities include: TLS version check, headers, certificate metadata.",
+        "Related risk themes: weak TLS, admin portal exposure, login exposure."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Web Services"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "KERBEROS_EXPOSED": {
+    "display_name": "KERBEROS service exposed",
+    "service": "kerberos",
+    "ports": [
+      88
+    ],
+    "category": "Identity",
+    "exploitability": 7,
+    "impact": 8,
+    "priority": 7,
+    "risk": "KERBEROS exposure may indicate kerberos commonly indicates an active directory identity environment. Risk themes include Active Directory exposure, authentication infrastructure, domain targeting.",
+    "threats": [
+      "Active Directory exposure",
+      "authentication infrastructure",
+      "domain targeting"
+    ],
+    "business_context": "Kerberos commonly indicates an Active Directory identity environment.",
+    "safe_validation": [
+      "port presence",
+      "AD role correlation"
+    ],
+    "remediation": [
+      "Confirm whether KERBEROS exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 88 TARGET",
+      "Review whether port(s) 88 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "KERBEROS was observed as part of the environment attack surface.",
+        "KERBEROS may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of KERBEROS contributes to the environment's identity exposure."
+      ],
+      "technical": [
+        "Observed port(s): 88.",
+        "Primary validation opportunities include: port presence, AD role correlation.",
+        "Related risk themes: Active Directory exposure, authentication infrastructure, domain targeting."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Identity"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "POP3_EXPOSED": {
+    "display_name": "POP3 service exposed",
+    "service": "pop3",
+    "ports": [
+      110,
+      995
+    ],
+    "category": "Mail",
+    "exploitability": 5,
+    "impact": 5,
+    "priority": 5,
+    "risk": "POP3 exposure may indicate mail retrieval services may represent legacy mailbox access. Risk themes include credential exposure, legacy mail access.",
+    "threats": [
+      "credential exposure",
+      "legacy mail access"
+    ],
+    "business_context": "Mail retrieval services may represent legacy mailbox access.",
+    "safe_validation": [
+      "banner grab",
+      "TLS support"
+    ],
+    "remediation": [
+      "Confirm whether POP3 exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 110 TARGET",
+      "Review whether port(s) 110, 995 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "POP3 was observed as part of the environment attack surface.",
+        "POP3 may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of POP3 contributes to the environment's mail exposure."
+      ],
+      "technical": [
+        "Observed port(s): 110, 995.",
+        "Primary validation opportunities include: banner grab, TLS support.",
+        "Related risk themes: credential exposure, legacy mail access."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Mail"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "IMAP_EXPOSED": {
+    "display_name": "IMAP service exposed",
+    "service": "imap",
+    "ports": [
+      143,
+      993
+    ],
+    "category": "Mail",
+    "exploitability": 5,
+    "impact": 5,
+    "priority": 5,
+    "risk": "IMAP exposure may indicate mail access services can expose user mailbox authentication surfaces. Risk themes include credential attacks, mailbox access.",
+    "threats": [
+      "credential attacks",
+      "mailbox access"
+    ],
+    "business_context": "Mail access services can expose user mailbox authentication surfaces.",
+    "safe_validation": [
+      "banner grab",
+      "TLS support"
+    ],
+    "remediation": [
+      "Confirm whether IMAP exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 143 TARGET",
+      "Review whether port(s) 143, 993 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "IMAP was observed as part of the environment attack surface.",
+        "IMAP may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of IMAP contributes to the environment's mail exposure."
+      ],
+      "technical": [
+        "Observed port(s): 143, 993.",
+        "Primary validation opportunities include: banner grab, TLS support.",
+        "Related risk themes: credential attacks, mailbox access."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Mail"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "SNMP_EXPOSED": {
+    "display_name": "SNMP service exposed",
+    "service": "snmp",
+    "ports": [
+      161
+    ],
+    "category": "Network Management",
+    "exploitability": 6,
+    "impact": 6,
+    "priority": 7,
+    "risk": "SNMP exposure may indicate often used by monitoring systems and network devices. Risk themes include community string exposure, device enumeration, network topology leakage.",
+    "threats": [
+      "community string exposure",
+      "device enumeration",
+      "network topology leakage"
+    ],
+    "business_context": "Often used by monitoring systems and network devices.",
+    "safe_validation": [
+      "public community check",
+      "version check"
+    ],
+    "remediation": [
+      "Confirm whether SNMP exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 161 TARGET",
+      "Review whether port(s) 161 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "SNMP was observed as part of the environment attack surface.",
+        "SNMP may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of SNMP contributes to the environment's network management exposure."
+      ],
+      "technical": [
+        "Observed port(s): 161.",
+        "Primary validation opportunities include: public community check, version check.",
+        "Related risk themes: community string exposure, device enumeration, network topology leakage."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Network Management"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "LDAP_EXPOSED": {
+    "display_name": "LDAP service exposed",
+    "service": "ldap",
+    "ports": [
+      389,
+      636,
+      3268,
+      3269
+    ],
+    "category": "Directory Services",
+    "exploitability": 7,
+    "impact": 8,
+    "priority": 7,
+    "risk": "LDAP exposure may indicate usually indicates directory services, identity infrastructure, or active directory. Risk themes include directory enumeration, identity exposure, domain reconnaissance.",
+    "threats": [
+      "directory enumeration",
+      "identity exposure",
+      "domain reconnaissance"
+    ],
+    "business_context": "Usually indicates directory services, identity infrastructure, or Active Directory.",
+    "safe_validation": [
+      "anonymous bind check",
+      "TLS check"
+    ],
+    "remediation": [
+      "Confirm whether LDAP exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 389 TARGET",
+      "Review whether port(s) 389, 636, 3268, 3269 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "LDAP was observed as part of the environment attack surface.",
+        "LDAP may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of LDAP contributes to the environment's directory services exposure."
+      ],
+      "technical": [
+        "Observed port(s): 389, 636, 3268, 3269.",
+        "Primary validation opportunities include: anonymous bind check, TLS check.",
+        "Related risk themes: directory enumeration, identity exposure, domain reconnaissance."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Directory Services"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "SMB_EXPOSED": {
+    "display_name": "SMB service exposed",
+    "service": "smb",
+    "ports": [
+      445,
+      139
+    ],
+    "category": "Windows File Sharing",
+    "exploitability": 8,
+    "impact": 9,
+    "priority": 9,
+    "risk": "SMB exposure may indicate smb exposure is common on windows hosts and file servers. Risk themes include share enumeration, lateral movement, credential relay.",
+    "threats": [
+      "share enumeration",
+      "lateral movement",
+      "credential relay"
+    ],
+    "business_context": "SMB exposure is common on Windows hosts and file servers.",
+    "safe_validation": [
+      "anonymous listing",
+      "SMB signing check",
+      "SMB version check"
+    ],
+    "remediation": [
+      "Confirm whether SMB exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 445 TARGET",
+      "Review whether port(s) 445, 139 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "SMB was observed as part of the environment attack surface.",
+        "SMB may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of SMB contributes to the environment's windows file sharing exposure."
+      ],
+      "technical": [
+        "Observed port(s): 445, 139.",
+        "Primary validation opportunities include: anonymous listing, SMB signing check, SMB version check.",
+        "Related risk themes: share enumeration, lateral movement, credential relay."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Windows File Sharing"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "MSSQL_EXPOSED": {
+    "display_name": "MSSQL service exposed",
+    "service": "mssql",
+    "ports": [
+      1433
+    ],
+    "category": "Databases",
+    "exploitability": 8,
+    "impact": 8,
+    "priority": 8,
+    "risk": "MSSQL exposure may indicate may host business application data or internal records. Risk themes include database brute force, data exposure, privileged database access.",
+    "threats": [
+      "database brute force",
+      "data exposure",
+      "privileged database access"
+    ],
+    "business_context": "May host business application data or internal records.",
+    "safe_validation": [
+      "banner grab",
+      "login policy review"
+    ],
+    "remediation": [
+      "Confirm whether MSSQL exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 1433 TARGET",
+      "Review whether port(s) 1433 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "MSSQL was observed as part of the environment attack surface.",
+        "MSSQL may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of MSSQL contributes to the environment's databases exposure."
+      ],
+      "technical": [
+        "Observed port(s): 1433.",
+        "Primary validation opportunities include: banner grab, login policy review.",
+        "Related risk themes: database brute force, data exposure, privileged database access."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Databases"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "ORACLE_EXPOSED": {
+    "display_name": "ORACLE service exposed",
+    "service": "oracle",
+    "ports": [
+      1521
+    ],
+    "category": "Databases",
+    "exploitability": 8,
+    "impact": 8,
+    "priority": 8,
+    "risk": "ORACLE exposure may indicate common in enterprise systems and legacy business applications. Risk themes include database exposure, legacy enterprise application risk.",
+    "threats": [
+      "database exposure",
+      "legacy enterprise application risk"
+    ],
+    "business_context": "Common in enterprise systems and legacy business applications.",
+    "safe_validation": [
+      "listener check",
+      "banner grab"
+    ],
+    "remediation": [
+      "Confirm whether ORACLE exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 1521 TARGET",
+      "Review whether port(s) 1521 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "ORACLE was observed as part of the environment attack surface.",
+        "ORACLE may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of ORACLE contributes to the environment's databases exposure."
+      ],
+      "technical": [
+        "Observed port(s): 1521.",
+        "Primary validation opportunities include: listener check, banner grab.",
+        "Related risk themes: database exposure, legacy enterprise application risk."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Databases"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "MYSQL_EXPOSED": {
+    "display_name": "MYSQL service exposed",
+    "service": "mysql",
+    "ports": [
+      3306
+    ],
+    "category": "Databases",
+    "exploitability": 8,
+    "impact": 8,
+    "priority": 8,
+    "risk": "MYSQL exposure may indicate common backend database for web applications. Risk themes include database brute force, sensitive data access.",
+    "threats": [
+      "database brute force",
+      "sensitive data access"
+    ],
+    "business_context": "Common backend database for web applications.",
+    "safe_validation": [
+      "banner grab",
+      "auth required check"
+    ],
+    "remediation": [
+      "Confirm whether MYSQL exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 3306 TARGET",
+      "Review whether port(s) 3306 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "MYSQL was observed as part of the environment attack surface.",
+        "MYSQL may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of MYSQL contributes to the environment's databases exposure."
+      ],
+      "technical": [
+        "Observed port(s): 3306.",
+        "Primary validation opportunities include: banner grab, auth required check.",
+        "Related risk themes: database brute force, sensitive data access."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Databases"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "POSTGRES_EXPOSED": {
+    "display_name": "POSTGRES service exposed",
+    "service": "postgres",
+    "ports": [
+      5432
+    ],
+    "category": "Databases",
+    "exploitability": 8,
+    "impact": 8,
+    "priority": 8,
+    "risk": "POSTGRES exposure may indicate common backend database for applications and analytics. Risk themes include database brute force, sensitive data access.",
+    "threats": [
+      "database brute force",
+      "sensitive data access"
+    ],
+    "business_context": "Common backend database for applications and analytics.",
+    "safe_validation": [
+      "banner grab",
+      "auth required check"
+    ],
+    "remediation": [
+      "Confirm whether POSTGRES exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 5432 TARGET",
+      "Review whether port(s) 5432 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "POSTGRES was observed as part of the environment attack surface.",
+        "POSTGRES may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of POSTGRES contributes to the environment's databases exposure."
+      ],
+      "technical": [
+        "Observed port(s): 5432.",
+        "Primary validation opportunities include: banner grab, auth required check.",
+        "Related risk themes: database brute force, sensitive data access."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Databases"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "RDP_EXPOSED": {
+    "display_name": "RDP service exposed",
+    "service": "rdp",
+    "ports": [
+      3389
+    ],
+    "category": "Remote Access",
+    "exploitability": 8,
+    "impact": 8,
+    "priority": 8,
+    "risk": "RDP exposure may indicate remote desktop access for windows systems and administrators. Risk themes include credential attacks, remote desktop compromise, ransomware access.",
+    "threats": [
+      "credential attacks",
+      "remote desktop compromise",
+      "ransomware access"
+    ],
+    "business_context": "Remote desktop access for Windows systems and administrators.",
+    "safe_validation": [
+      "NLA check",
+      "certificate metadata"
+    ],
+    "remediation": [
+      "Confirm whether RDP exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 3389 TARGET",
+      "Review whether port(s) 3389 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "RDP was observed as part of the environment attack surface.",
+        "RDP may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of RDP contributes to the environment's remote access exposure."
+      ],
+      "technical": [
+        "Observed port(s): 3389.",
+        "Primary validation opportunities include: NLA check, certificate metadata.",
+        "Related risk themes: credential attacks, remote desktop compromise, ransomware access."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Remote Access"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "VNC_EXPOSED": {
+    "display_name": "VNC service exposed",
+    "service": "vnc",
+    "ports": [
+      5900,
+      5901
+    ],
+    "category": "Remote Access",
+    "exploitability": 8,
+    "impact": 8,
+    "priority": 8,
+    "risk": "VNC exposure may indicate remote graphical access, often used on workstations, lab systems, or appliances. Risk themes include weak auth, remote desktop exposure, screen access.",
+    "threats": [
+      "weak auth",
+      "remote desktop exposure",
+      "screen access"
+    ],
+    "business_context": "Remote graphical access, often used on workstations, lab systems, or appliances.",
+    "safe_validation": [
+      "banner grab",
+      "auth required check"
+    ],
+    "remediation": [
+      "Confirm whether VNC exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 5900 TARGET",
+      "Review whether port(s) 5900, 5901 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "VNC was observed as part of the environment attack surface.",
+        "VNC may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of VNC contributes to the environment's remote access exposure."
+      ],
+      "technical": [
+        "Observed port(s): 5900, 5901.",
+        "Primary validation opportunities include: banner grab, auth required check.",
+        "Related risk themes: weak auth, remote desktop exposure, screen access."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Remote Access"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "REDIS_EXPOSED": {
+    "display_name": "REDIS service exposed",
+    "service": "redis",
+    "ports": [
+      6379
+    ],
+    "category": "Databases",
+    "exploitability": 8,
+    "impact": 8,
+    "priority": 8,
+    "risk": "REDIS exposure may indicate in-memory datastore often used by applications and queues. Risk themes include unauthenticated data access, configuration abuse, remote manipulation.",
+    "threats": [
+      "unauthenticated data access",
+      "configuration abuse",
+      "remote manipulation"
+    ],
+    "business_context": "In-memory datastore often used by applications and queues.",
+    "safe_validation": [
+      "PING response",
+      "NOAUTH response"
+    ],
+    "remediation": [
+      "Confirm whether REDIS exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 6379 TARGET",
+      "Review whether port(s) 6379 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "REDIS was observed as part of the environment attack surface.",
+        "REDIS may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of REDIS contributes to the environment's databases exposure."
+      ],
+      "technical": [
+        "Observed port(s): 6379.",
+        "Primary validation opportunities include: PING response, NOAUTH response.",
+        "Related risk themes: unauthenticated data access, configuration abuse, remote manipulation."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Databases"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "MONGODB_EXPOSED": {
+    "display_name": "MONGODB service exposed",
+    "service": "mongodb",
+    "ports": [
+      27017
+    ],
+    "category": "Databases",
+    "exploitability": 8,
+    "impact": 8,
+    "priority": 8,
+    "risk": "MONGODB exposure may indicate document database used by applications and analytics. Risk themes include unauthenticated data exposure, data theft, destructive modification.",
+    "threats": [
+      "unauthenticated data exposure",
+      "data theft",
+      "destructive modification"
+    ],
+    "business_context": "Document database used by applications and analytics.",
+    "safe_validation": [
+      "connectivity check",
+      "auth required check"
+    ],
+    "remediation": [
+      "Confirm whether MONGODB exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 27017 TARGET",
+      "Review whether port(s) 27017 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "MONGODB was observed as part of the environment attack surface.",
+        "MONGODB may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of MONGODB contributes to the environment's databases exposure."
+      ],
+      "technical": [
+        "Observed port(s): 27017.",
+        "Primary validation opportunities include: connectivity check, auth required check.",
+        "Related risk themes: unauthenticated data exposure, data theft, destructive modification."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Databases"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "ELASTICSEARCH_EXPOSED": {
+    "display_name": "ELASTICSEARCH service exposed",
+    "service": "elasticsearch",
+    "ports": [
+      9200,
+      9300
+    ],
+    "category": "Search and Logs",
+    "exploitability": 8,
+    "impact": 8,
+    "priority": 8,
+    "risk": "ELASTICSEARCH exposure may indicate often stores logs, telemetry, and searchable operational data. Risk themes include indexed data exposure, log leakage, operational intelligence.",
+    "threats": [
+      "indexed data exposure",
+      "log leakage",
+      "operational intelligence"
+    ],
+    "business_context": "Often stores logs, telemetry, and searchable operational data.",
+    "safe_validation": [
+      "root endpoint check",
+      "auth required check"
+    ],
+    "remediation": [
+      "Confirm whether ELASTICSEARCH exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 9200 TARGET",
+      "Review whether port(s) 9200, 9300 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "ELASTICSEARCH was observed as part of the environment attack surface.",
+        "ELASTICSEARCH may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of ELASTICSEARCH contributes to the environment's search and logs exposure."
+      ],
+      "technical": [
+        "Observed port(s): 9200, 9300.",
+        "Primary validation opportunities include: root endpoint check, auth required check.",
+        "Related risk themes: indexed data exposure, log leakage, operational intelligence."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Search and Logs"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "KIBANA_EXPOSED": {
+    "display_name": "KIBANA service exposed",
+    "service": "kibana",
+    "ports": [
+      5601
+    ],
+    "category": "Monitoring and Logs",
+    "exploitability": 7,
+    "impact": 7,
+    "priority": 7,
+    "risk": "KIBANA exposure may indicate visualization frontend for elasticsearch and logs. Risk themes include dashboard exposure, sensitive log access, operations visibility.",
+    "threats": [
+      "dashboard exposure",
+      "sensitive log access",
+      "operations visibility"
+    ],
+    "business_context": "Visualization frontend for Elasticsearch and logs.",
+    "safe_validation": [
+      "HTTP title",
+      "auth required check"
+    ],
+    "remediation": [
+      "Confirm whether KIBANA exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 5601 TARGET",
+      "Review whether port(s) 5601 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "KIBANA was observed as part of the environment attack surface.",
+        "KIBANA may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of KIBANA contributes to the environment's monitoring and logs exposure."
+      ],
+      "technical": [
+        "Observed port(s): 5601.",
+        "Primary validation opportunities include: HTTP title, auth required check.",
+        "Related risk themes: dashboard exposure, sensitive log access, operations visibility."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Monitoring and Logs"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "JENKINS_EXPOSED": {
+    "display_name": "JENKINS service exposed",
+    "service": "jenkins",
+    "ports": [
+      8080,
+      8081
+    ],
+    "category": "DevOps",
+    "exploitability": 9,
+    "impact": 9,
+    "priority": 9,
+    "risk": "JENKINS exposure may indicate build automation platform with access to code, secrets, and deployment workflows. Risk themes include CI/CD compromise, credential exposure, build abuse.",
+    "threats": [
+      "CI/CD compromise",
+      "credential exposure",
+      "build abuse"
+    ],
+    "business_context": "Build automation platform with access to code, secrets, and deployment workflows.",
+    "safe_validation": [
+      "anonymous access check",
+      "title check"
+    ],
+    "remediation": [
+      "Confirm whether JENKINS exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 8080 TARGET",
+      "Review whether port(s) 8080, 8081 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "JENKINS was observed as part of the environment attack surface.",
+        "JENKINS may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of JENKINS contributes to the environment's devops exposure."
+      ],
+      "technical": [
+        "Observed port(s): 8080, 8081.",
+        "Primary validation opportunities include: anonymous access check, title check.",
+        "Related risk themes: CI/CD compromise, credential exposure, build abuse."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "DevOps"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "DOCKER_API_EXPOSED": {
+    "display_name": "DOCKER_API service exposed",
+    "service": "docker_api",
+    "ports": [
+      2375,
+      2376
+    ],
+    "category": "Container Infrastructure",
+    "exploitability": 10,
+    "impact": 10,
+    "priority": 10,
+    "risk": "DOCKER_API exposure may indicate docker control plane for containers and sometimes host-level operations. Risk themes include container control, host compromise, secret exposure.",
+    "threats": [
+      "container control",
+      "host compromise",
+      "secret exposure"
+    ],
+    "business_context": "Docker control plane for containers and sometimes host-level operations.",
+    "safe_validation": [
+      "/version endpoint",
+      "TLS requirement check"
+    ],
+    "remediation": [
+      "Confirm whether DOCKER_API exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 2375 TARGET",
+      "Review whether port(s) 2375, 2376 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "DOCKER_API was observed as part of the environment attack surface.",
+        "DOCKER_API may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of DOCKER_API contributes to the environment's container infrastructure exposure."
+      ],
+      "technical": [
+        "Observed port(s): 2375, 2376.",
+        "Primary validation opportunities include: /version endpoint, TLS requirement check.",
+        "Related risk themes: container control, host compromise, secret exposure."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Container Infrastructure"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "KUBERNETES_API_EXPOSED": {
+    "display_name": "KUBERNETES_API service exposed",
+    "service": "kubernetes_api",
+    "ports": [
+      6443
+    ],
+    "category": "Container Infrastructure",
+    "exploitability": 10,
+    "impact": 10,
+    "priority": 10,
+    "risk": "KUBERNETES_API exposure may indicate kubernetes cluster control plane api. Risk themes include cluster control, secret exposure, workload manipulation.",
+    "threats": [
+      "cluster control",
+      "secret exposure",
+      "workload manipulation"
+    ],
+    "business_context": "Kubernetes cluster control plane API.",
+    "safe_validation": [
+      "/version endpoint",
+      "auth required check"
+    ],
+    "remediation": [
+      "Confirm whether KUBERNETES_API exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 6443 TARGET",
+      "Review whether port(s) 6443 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "KUBERNETES_API was observed as part of the environment attack surface.",
+        "KUBERNETES_API may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of KUBERNETES_API contributes to the environment's container infrastructure exposure."
+      ],
+      "technical": [
+        "Observed port(s): 6443.",
+        "Primary validation opportunities include: /version endpoint, auth required check.",
+        "Related risk themes: cluster control, secret exposure, workload manipulation."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Container Infrastructure"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "KUBELET_EXPOSED": {
+    "display_name": "KUBELET service exposed",
+    "service": "kubelet",
+    "ports": [
+      10250,
+      10255
+    ],
+    "category": "Container Infrastructure",
+    "exploitability": 10,
+    "impact": 10,
+    "priority": 10,
+    "risk": "KUBELET exposure may indicate kubernetes node agent interface. Risk themes include pod enumeration, node access, workload visibility.",
+    "threats": [
+      "pod enumeration",
+      "node access",
+      "workload visibility"
+    ],
+    "business_context": "Kubernetes node agent interface.",
+    "safe_validation": [
+      "/pods endpoint",
+      "auth required check"
+    ],
+    "remediation": [
+      "Confirm whether KUBELET exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 10250 TARGET",
+      "Review whether port(s) 10250, 10255 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "KUBELET was observed as part of the environment attack surface.",
+        "KUBELET may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of KUBELET contributes to the environment's container infrastructure exposure."
+      ],
+      "technical": [
+        "Observed port(s): 10250, 10255.",
+        "Primary validation opportunities include: /pods endpoint, auth required check.",
+        "Related risk themes: pod enumeration, node access, workload visibility."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Container Infrastructure"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "PORTAINER_EXPOSED": {
+    "display_name": "PORTAINER service exposed",
+    "service": "portainer",
+    "ports": [
+      9000,
+      9443
+    ],
+    "category": "Container Infrastructure",
+    "exploitability": 10,
+    "impact": 10,
+    "priority": 10,
+    "risk": "PORTAINER exposure may indicate web management ui for docker or kubernetes environments. Risk themes include container management, orchestration exposure, credential attacks.",
+    "threats": [
+      "container management",
+      "orchestration exposure",
+      "credential attacks"
+    ],
+    "business_context": "Web management UI for Docker or Kubernetes environments.",
+    "safe_validation": [
+      "title check",
+      "auth required check"
+    ],
+    "remediation": [
+      "Confirm whether PORTAINER exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 9000 TARGET",
+      "Review whether port(s) 9000, 9443 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "PORTAINER was observed as part of the environment attack surface.",
+        "PORTAINER may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of PORTAINER contributes to the environment's container infrastructure exposure."
+      ],
+      "technical": [
+        "Observed port(s): 9000, 9443.",
+        "Primary validation opportunities include: title check, auth required check.",
+        "Related risk themes: container management, orchestration exposure, credential attacks."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Container Infrastructure"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "GRAFANA_EXPOSED": {
+    "display_name": "GRAFANA service exposed",
+    "service": "grafana",
+    "ports": [
+      3000
+    ],
+    "category": "Monitoring and Logs",
+    "exploitability": 7,
+    "impact": 7,
+    "priority": 7,
+    "risk": "GRAFANA exposure may indicate monitoring dashboard connected to infrastructure and application metrics. Risk themes include dashboard exposure, data source exposure, credential attacks.",
+    "threats": [
+      "dashboard exposure",
+      "data source exposure",
+      "credential attacks"
+    ],
+    "business_context": "Monitoring dashboard connected to infrastructure and application metrics.",
+    "safe_validation": [
+      "title check",
+      "auth required check"
+    ],
+    "remediation": [
+      "Confirm whether GRAFANA exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 3000 TARGET",
+      "Review whether port(s) 3000 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "GRAFANA was observed as part of the environment attack surface.",
+        "GRAFANA may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of GRAFANA contributes to the environment's monitoring and logs exposure."
+      ],
+      "technical": [
+        "Observed port(s): 3000.",
+        "Primary validation opportunities include: title check, auth required check.",
+        "Related risk themes: dashboard exposure, data source exposure, credential attacks."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Monitoring and Logs"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "PROMETHEUS_EXPOSED": {
+    "display_name": "PROMETHEUS service exposed",
+    "service": "prometheus",
+    "ports": [
+      9090
+    ],
+    "category": "Monitoring and Logs",
+    "exploitability": 7,
+    "impact": 7,
+    "priority": 7,
+    "risk": "PROMETHEUS exposure may indicate monitoring system that can reveal service names, targets, and infrastructure metadata. Risk themes include metric exposure, service discovery leakage, infrastructure visibility.",
+    "threats": [
+      "metric exposure",
+      "service discovery leakage",
+      "infrastructure visibility"
+    ],
+    "business_context": "Monitoring system that can reveal service names, targets, and infrastructure metadata.",
+    "safe_validation": [
+      "HTTP endpoint check",
+      "targets page check"
+    ],
+    "remediation": [
+      "Confirm whether PROMETHEUS exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 9090 TARGET",
+      "Review whether port(s) 9090 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "PROMETHEUS was observed as part of the environment attack surface.",
+        "PROMETHEUS may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of PROMETHEUS contributes to the environment's monitoring and logs exposure."
+      ],
+      "technical": [
+        "Observed port(s): 9090.",
+        "Primary validation opportunities include: HTTP endpoint check, targets page check.",
+        "Related risk themes: metric exposure, service discovery leakage, infrastructure visibility."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Monitoring and Logs"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "PRINTER_RAW_EXPOSED": {
+    "display_name": "PRINTER_RAW service exposed",
+    "service": "printer_raw",
+    "ports": [
+      9100
+    ],
+    "category": "Printers and Peripherals",
+    "exploitability": 4,
+    "impact": 4,
+    "priority": 4,
+    "risk": "PRINTER_RAW exposure may indicate raw print service common on network printers. Risk themes include unauthorized printing, device enumeration, printer abuse.",
+    "threats": [
+      "unauthorized printing",
+      "device enumeration",
+      "printer abuse"
+    ],
+    "business_context": "Raw print service common on network printers.",
+    "safe_validation": [
+      "port check",
+      "banner grab"
+    ],
+    "remediation": [
+      "Confirm whether PRINTER_RAW exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 9100 TARGET",
+      "Review whether port(s) 9100 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "PRINTER_RAW was observed as part of the environment attack surface.",
+        "PRINTER_RAW may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of PRINTER_RAW contributes to the environment's printers and peripherals exposure."
+      ],
+      "technical": [
+        "Observed port(s): 9100.",
+        "Primary validation opportunities include: port check, banner grab.",
+        "Related risk themes: unauthorized printing, device enumeration, printer abuse."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Printers and Peripherals"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "IPP_EXPOSED": {
+    "display_name": "IPP service exposed",
+    "service": "ipp",
+    "ports": [
+      631
+    ],
+    "category": "Printers and Peripherals",
+    "exploitability": 4,
+    "impact": 4,
+    "priority": 4,
+    "risk": "IPP exposure may indicate internet printing protocol, often found on printers and cups servers. Risk themes include printer enumeration, job abuse, management exposure.",
+    "threats": [
+      "printer enumeration",
+      "job abuse",
+      "management exposure"
+    ],
+    "business_context": "Internet Printing Protocol, often found on printers and CUPS servers.",
+    "safe_validation": [
+      "HTTP check",
+      "CUPS page check"
+    ],
+    "remediation": [
+      "Confirm whether IPP exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 631 TARGET",
+      "Review whether port(s) 631 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "IPP was observed as part of the environment attack surface.",
+        "IPP may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of IPP contributes to the environment's printers and peripherals exposure."
+      ],
+      "technical": [
+        "Observed port(s): 631.",
+        "Primary validation opportunities include: HTTP check, CUPS page check.",
+        "Related risk themes: printer enumeration, job abuse, management exposure."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Printers and Peripherals"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "RTSP_EXPOSED": {
+    "display_name": "RTSP service exposed",
+    "service": "rtsp",
+    "ports": [
+      554
+    ],
+    "category": "IoT and Cameras",
+    "exploitability": 6,
+    "impact": 6,
+    "priority": 6,
+    "risk": "RTSP exposure may indicate streaming protocol often associated with cameras, dvrs, and media devices. Risk themes include video feed exposure, camera discovery, default credentials.",
+    "threats": [
+      "video feed exposure",
+      "camera discovery",
+      "default credentials"
+    ],
+    "business_context": "Streaming protocol often associated with cameras, DVRs, and media devices.",
+    "safe_validation": [
+      "RTSP OPTIONS",
+      "banner grab"
+    ],
+    "remediation": [
+      "Confirm whether RTSP exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 554 TARGET",
+      "Review whether port(s) 554 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "RTSP was observed as part of the environment attack surface.",
+        "RTSP may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of RTSP contributes to the environment's iot and cameras exposure."
+      ],
+      "technical": [
+        "Observed port(s): 554.",
+        "Primary validation opportunities include: RTSP OPTIONS, banner grab.",
+        "Related risk themes: video feed exposure, camera discovery, default credentials."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "IoT and Cameras"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "UPNP_EXPOSED": {
+    "display_name": "UPNP service exposed",
+    "service": "upnp",
+    "ports": [
+      1900
+    ],
+    "category": "Network Discovery",
+    "exploitability": 5,
+    "impact": 5,
+    "priority": 5,
+    "risk": "UPNP exposure may indicate consumer/iot discovery and automatic port mapping protocol. Risk themes include device discovery, unsafe port mapping, topology leakage.",
+    "threats": [
+      "device discovery",
+      "unsafe port mapping",
+      "topology leakage"
+    ],
+    "business_context": "Consumer/IoT discovery and automatic port mapping protocol.",
+    "safe_validation": [
+      "SSDP discovery"
+    ],
+    "remediation": [
+      "Confirm whether UPNP exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 1900 TARGET",
+      "Review whether port(s) 1900 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "UPNP was observed as part of the environment attack surface.",
+        "UPNP may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of UPNP contributes to the environment's network discovery exposure."
+      ],
+      "technical": [
+        "Observed port(s): 1900.",
+        "Primary validation opportunities include: SSDP discovery.",
+        "Related risk themes: device discovery, unsafe port mapping, topology leakage."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Network Discovery"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "ADB_EXPOSED": {
+    "display_name": "ADB service exposed",
+    "service": "adb",
+    "ports": [
+      5555
+    ],
+    "category": "Mobile and IoT",
+    "exploitability": 5,
+    "impact": 5,
+    "priority": 5,
+    "risk": "ADB exposure may indicate android debug bridge often indicates exposed android or embedded device debugging. Risk themes include Android device control, debug interface exposure.",
+    "threats": [
+      "Android device control",
+      "debug interface exposure"
+    ],
+    "business_context": "Android Debug Bridge often indicates exposed Android or embedded device debugging.",
+    "safe_validation": [
+      "connectivity check"
+    ],
+    "remediation": [
+      "Confirm whether ADB exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 5555 TARGET",
+      "Review whether port(s) 5555 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "ADB was observed as part of the environment attack surface.",
+        "ADB may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of ADB contributes to the environment's mobile and iot exposure."
+      ],
+      "technical": [
+        "Observed port(s): 5555.",
+        "Primary validation opportunities include: connectivity check.",
+        "Related risk themes: Android device control, debug interface exposure."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Mobile and IoT"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "TR069_EXPOSED": {
+    "display_name": "TR069 service exposed",
+    "service": "tr069",
+    "ports": [
+      7547
+    ],
+    "category": "Router and CPE Management",
+    "exploitability": 5,
+    "impact": 5,
+    "priority": 5,
+    "risk": "TR069 exposure may indicate management protocol commonly associated with routers and isp customer premises equipment. Risk themes include router management exposure, ISP device management, CPE compromise.",
+    "threats": [
+      "router management exposure",
+      "ISP device management",
+      "CPE compromise"
+    ],
+    "business_context": "Management protocol commonly associated with routers and ISP customer premises equipment.",
+    "safe_validation": [
+      "HTTP title",
+      "banner grab"
+    ],
+    "remediation": [
+      "Confirm whether TR069 exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 7547 TARGET",
+      "Review whether port(s) 7547 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "TR069 was observed as part of the environment attack surface.",
+        "TR069 may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of TR069 contributes to the environment's router and cpe management exposure."
+      ],
+      "technical": [
+        "Observed port(s): 7547.",
+        "Primary validation opportunities include: HTTP title, banner grab.",
+        "Related risk themes: router management exposure, ISP device management, CPE compromise."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Router and CPE Management"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
+  },
+  "LDAPS_EXPOSED": {
+    "display_name": "Ldaps Exposed",
+    "service": "ldap",
+    "ports": [
+      389,
+      636,
+      3268,
+      3269
+    ],
+    "category": "Directory Services",
+    "exploitability": 7,
+    "impact": 8,
+    "priority": 7,
+    "risk": "LDAP exposure may indicate usually indicates directory services, identity infrastructure, or active directory. Risk themes include directory enumeration, identity exposure, domain reconnaissance.",
+    "threats": [
+      "directory enumeration",
+      "identity exposure",
+      "domain reconnaissance"
+    ],
+    "business_context": "Usually indicates directory services, identity infrastructure, or Active Directory.",
+    "safe_validation": [
+      "anonymous bind check",
+      "TLS check"
+    ],
+    "remediation": [
+      "Confirm whether LDAP exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 389 TARGET",
+      "Review whether port(s) 389, 636, 3268, 3269 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "LDAP was observed as part of the environment attack surface.",
+        "LDAP may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of LDAP contributes to the environment's directory services exposure."
+      ],
+      "technical": [
+        "Observed port(s): 389, 636, 3268, 3269.",
+        "Primary validation opportunities include: anonymous bind check, TLS check.",
+        "Related risk themes: directory enumeration, identity exposure, domain reconnaissance."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Directory Services"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    },
+    "alias_of": "LDAP_EXPOSED"
+  },
+  "DOCKER_TLS_EXPOSED": {
+    "display_name": "Docker Tls Exposed",
+    "service": "docker_api",
+    "ports": [
+      2375,
+      2376
+    ],
+    "category": "Container Infrastructure",
+    "exploitability": 10,
+    "impact": 10,
+    "priority": 10,
+    "risk": "DOCKER_API exposure may indicate docker control plane for containers and sometimes host-level operations. Risk themes include container control, host compromise, secret exposure.",
+    "threats": [
+      "container control",
+      "host compromise",
+      "secret exposure"
+    ],
+    "business_context": "Docker control plane for containers and sometimes host-level operations.",
+    "safe_validation": [
+      "/version endpoint",
+      "TLS requirement check"
+    ],
+    "remediation": [
+      "Confirm whether DOCKER_API exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 2375 TARGET",
+      "Review whether port(s) 2375, 2376 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "DOCKER_API was observed as part of the environment attack surface.",
+        "DOCKER_API may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of DOCKER_API contributes to the environment's container infrastructure exposure."
+      ],
+      "technical": [
+        "Observed port(s): 2375, 2376.",
+        "Primary validation opportunities include: /version endpoint, TLS requirement check.",
+        "Related risk themes: container control, host compromise, secret exposure."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Container Infrastructure"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    },
+    "alias_of": "DOCKER_API_EXPOSED"
+  },
+  "PRINTER_9100_EXPOSED": {
+    "display_name": "Printer 9100 Exposed",
+    "service": "printer_raw",
+    "ports": [
+      9100
+    ],
+    "category": "Printers and Peripherals",
+    "exploitability": 4,
+    "impact": 4,
+    "priority": 4,
+    "risk": "PRINTER_RAW exposure may indicate raw print service common on network printers. Risk themes include unauthorized printing, device enumeration, printer abuse.",
+    "threats": [
+      "unauthorized printing",
+      "device enumeration",
+      "printer abuse"
+    ],
+    "business_context": "Raw print service common on network printers.",
+    "safe_validation": [
+      "port check",
+      "banner grab"
+    ],
+    "remediation": [
+      "Confirm whether PRINTER_RAW exposure is required.",
+      "Restrict access to trusted networks, VPNs, or administrative subnets where possible.",
+      "Require strong authentication and review default or shared credentials.",
+      "Review service configuration for unnecessary features or anonymous access.",
+      "Monitor access attempts and investigate unexpected exposure."
+    ],
+    "verification": [
+      "nmap -p 9100 TARGET",
+      "Review whether port(s) 9100 are still reachable from the assessment network."
+    ],
+    "report_variants": {
+      "executive": [
+        "PRINTER_RAW was observed as part of the environment attack surface.",
+        "PRINTER_RAW may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of PRINTER_RAW contributes to the environment's printers and peripherals exposure."
+      ],
+      "technical": [
+        "Observed port(s): 9100.",
+        "Primary validation opportunities include: port check, banner grab.",
+        "Related risk themes: unauthorized printing, device enumeration, printer abuse."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Printers and Peripherals"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    },
+    "alias_of": "PRINTER_RAW_EXPOSED"
+  }
+}
