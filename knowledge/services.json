@@ -1,0 +1,591 @@
+{
+  "FTP": {
+    "ports": [
+      21
+    ],
+    "category": "File Transfer",
+    "risk_themes": [
+      "plaintext credentials",
+      "anonymous access",
+      "legacy file exposure"
+    ],
+    "safe_checks": [
+      "banner grab",
+      "anonymous login check"
+    ],
+    "business_context": "Often used for legacy file movement or embedded device management."
+  },
+  "SSH": {
+    "ports": [
+      22
+    ],
+    "category": "Remote Access",
+    "risk_themes": [
+      "credential attacks",
+      "remote shell access",
+      "administrative exposure"
+    ],
+    "safe_checks": [
+      "banner grab",
+      "auth method review"
+    ],
+    "business_context": "Common administrative access service for Linux and network devices."
+  },
+  "TELNET": {
+    "ports": [
+      23
+    ],
+    "category": "Legacy Remote Access",
+    "risk_themes": [
+      "plaintext credentials",
+      "legacy management",
+      "device takeover"
+    ],
+    "safe_checks": [
+      "banner grab",
+      "connectivity check"
+    ],
+    "business_context": "Usually indicates legacy network, camera, printer, or embedded device administration."
+  },
+  "SMTP": {
+    "ports": [
+      25,
+      465,
+      587
+    ],
+    "category": "Mail",
+    "risk_themes": [
+      "open relay",
+      "mail spoofing",
+      "credential attacks"
+    ],
+    "safe_checks": [
+      "banner grab",
+      "STARTTLS check"
+    ],
+    "business_context": "Mail services may expose business communication infrastructure."
+  },
+  "DNS": {
+    "ports": [
+      53
+    ],
+    "category": "Network Infrastructure",
+    "risk_themes": [
+      "zone transfer",
+      "internal enumeration",
+      "amplification"
+    ],
+    "safe_checks": [
+      "version query",
+      "zone transfer check if authorized"
+    ],
+    "business_context": "DNS exposure can reveal internal naming and infrastructure layout."
+  },
+  "HTTP": {
+    "ports": [
+      80,
+      8080,
+      8000,
+      8888
+    ],
+    "category": "Web Services",
+    "risk_themes": [
+      "admin portal exposure",
+      "default pages",
+      "unencrypted traffic"
+    ],
+    "safe_checks": [
+      "HTTP title",
+      "headers",
+      "directory listing indicators"
+    ],
+    "business_context": "Web services often represent business applications, admin consoles, or appliance UIs."
+  },
+  "HTTPS": {
+    "ports": [
+      443,
+      8443
+    ],
+    "category": "Web Services",
+    "risk_themes": [
+      "weak TLS",
+      "admin portal exposure",
+      "login exposure"
+    ],
+    "safe_checks": [
+      "TLS version check",
+      "headers",
+      "certificate metadata"
+    ],
+    "business_context": "HTTPS services may host production web apps, portals, dashboards, or device management."
+  },
+  "KERBEROS": {
+    "ports": [
+      88
+    ],
+    "category": "Identity",
+    "risk_themes": [
+      "Active Directory exposure",
+      "authentication infrastructure",
+      "domain targeting"
+    ],
+    "safe_checks": [
+      "port presence",
+      "AD role correlation"
+    ],
+    "business_context": "Kerberos commonly indicates an Active Directory identity environment."
+  },
+  "POP3": {
+    "ports": [
+      110,
+      995
+    ],
+    "category": "Mail",
+    "risk_themes": [
+      "credential exposure",
+      "legacy mail access"
+    ],
+    "safe_checks": [
+      "banner grab",
+      "TLS support"
+    ],
+    "business_context": "Mail retrieval services may represent legacy mailbox access."
+  },
+  "IMAP": {
+    "ports": [
+      143,
+      993
+    ],
+    "category": "Mail",
+    "risk_themes": [
+      "credential attacks",
+      "mailbox access"
+    ],
+    "safe_checks": [
+      "banner grab",
+      "TLS support"
+    ],
+    "business_context": "Mail access services can expose user mailbox authentication surfaces."
+  },
+  "SNMP": {
+    "ports": [
+      161
+    ],
+    "category": "Network Management",
+    "risk_themes": [
+      "community string exposure",
+      "device enumeration",
+      "network topology leakage"
+    ],
+    "safe_checks": [
+      "public community check",
+      "version check"
+    ],
+    "business_context": "Often used by monitoring systems and network devices."
+  },
+  "LDAP": {
+    "ports": [
+      389,
+      636,
+      3268,
+      3269
+    ],
+    "category": "Directory Services",
+    "risk_themes": [
+      "directory enumeration",
+      "identity exposure",
+      "domain reconnaissance"
+    ],
+    "safe_checks": [
+      "anonymous bind check",
+      "TLS check"
+    ],
+    "business_context": "Usually indicates directory services, identity infrastructure, or Active Directory."
+  },
+  "SMB": {
+    "ports": [
+      445,
+      139
+    ],
+    "category": "Windows File Sharing",
+    "risk_themes": [
+      "share enumeration",
+      "lateral movement",
+      "credential relay"
+    ],
+    "safe_checks": [
+      "anonymous listing",
+      "SMB signing check",
+      "SMB version check"
+    ],
+    "business_context": "SMB exposure is common on Windows hosts and file servers."
+  },
+  "MSSQL": {
+    "ports": [
+      1433
+    ],
+    "category": "Databases",
+    "risk_themes": [
+      "database brute force",
+      "data exposure",
+      "privileged database access"
+    ],
+    "safe_checks": [
+      "banner grab",
+      "login policy review"
+    ],
+    "business_context": "May host business application data or internal records."
+  },
+  "ORACLE": {
+    "ports": [
+      1521
+    ],
+    "category": "Databases",
+    "risk_themes": [
+      "database exposure",
+      "legacy enterprise application risk"
+    ],
+    "safe_checks": [
+      "listener check",
+      "banner grab"
+    ],
+    "business_context": "Common in enterprise systems and legacy business applications."
+  },
+  "MYSQL": {
+    "ports": [
+      3306
+    ],
+    "category": "Databases",
+    "risk_themes": [
+      "database brute force",
+      "sensitive data access"
+    ],
+    "safe_checks": [
+      "banner grab",
+      "auth required check"
+    ],
+    "business_context": "Common backend database for web applications."
+  },
+  "POSTGRES": {
+    "ports": [
+      5432
+    ],
+    "category": "Databases",
+    "risk_themes": [
+      "database brute force",
+      "sensitive data access"
+    ],
+    "safe_checks": [
+      "banner grab",
+      "auth required check"
+    ],
+    "business_context": "Common backend database for applications and analytics."
+  },
+  "RDP": {
+    "ports": [
+      3389
+    ],
+    "category": "Remote Access",
+    "risk_themes": [
+      "credential attacks",
+      "remote desktop compromise",
+      "ransomware access"
+    ],
+    "safe_checks": [
+      "NLA check",
+      "certificate metadata"
+    ],
+    "business_context": "Remote desktop access for Windows systems and administrators."
+  },
+  "VNC": {
+    "ports": [
+      5900,
+      5901
+    ],
+    "category": "Remote Access",
+    "risk_themes": [
+      "weak auth",
+      "remote desktop exposure",
+      "screen access"
+    ],
+    "safe_checks": [
+      "banner grab",
+      "auth required check"
+    ],
+    "business_context": "Remote graphical access, often used on workstations, lab systems, or appliances."
+  },
+  "REDIS": {
+    "ports": [
+      6379
+    ],
+    "category": "Databases",
+    "risk_themes": [
+      "unauthenticated data access",
+      "configuration abuse",
+      "remote manipulation"
+    ],
+    "safe_checks": [
+      "PING response",
+      "NOAUTH response"
+    ],
+    "business_context": "In-memory datastore often used by applications and queues."
+  },
+  "MONGODB": {
+    "ports": [
+      27017
+    ],
+    "category": "Databases",
+    "risk_themes": [
+      "unauthenticated data exposure",
+      "data theft",
+      "destructive modification"
+    ],
+    "safe_checks": [
+      "connectivity check",
+      "auth required check"
+    ],
+    "business_context": "Document database used by applications and analytics."
+  },
+  "ELASTICSEARCH": {
+    "ports": [
+      9200,
+      9300
+    ],
+    "category": "Search and Logs",
+    "risk_themes": [
+      "indexed data exposure",
+      "log leakage",
+      "operational intelligence"
+    ],
+    "safe_checks": [
+      "root endpoint check",
+      "auth required check"
+    ],
+    "business_context": "Often stores logs, telemetry, and searchable operational data."
+  },
+  "KIBANA": {
+    "ports": [
+      5601
+    ],
+    "category": "Monitoring and Logs",
+    "risk_themes": [
+      "dashboard exposure",
+      "sensitive log access",
+      "operations visibility"
+    ],
+    "safe_checks": [
+      "HTTP title",
+      "auth required check"
+    ],
+    "business_context": "Visualization frontend for Elasticsearch and logs."
+  },
+  "JENKINS": {
+    "ports": [
+      8080,
+      8081
+    ],
+    "category": "DevOps",
+    "risk_themes": [
+      "CI/CD compromise",
+      "credential exposure",
+      "build abuse"
+    ],
+    "safe_checks": [
+      "anonymous access check",
+      "title check"
+    ],
+    "business_context": "Build automation platform with access to code, secrets, and deployment workflows."
+  },
+  "DOCKER_API": {
+    "ports": [
+      2375,
+      2376
+    ],
+    "category": "Container Infrastructure",
+    "risk_themes": [
+      "container control",
+      "host compromise",
+      "secret exposure"
+    ],
+    "safe_checks": [
+      "/version endpoint",
+      "TLS requirement check"
+    ],
+    "business_context": "Docker control plane for containers and sometimes host-level operations."
+  },
+  "KUBERNETES_API": {
+    "ports": [
+      6443
+    ],
+    "category": "Container Infrastructure",
+    "risk_themes": [
+      "cluster control",
+      "secret exposure",
+      "workload manipulation"
+    ],
+    "safe_checks": [
+      "/version endpoint",
+      "auth required check"
+    ],
+    "business_context": "Kubernetes cluster control plane API."
+  },
+  "KUBELET": {
+    "ports": [
+      10250,
+      10255
+    ],
+    "category": "Container Infrastructure",
+    "risk_themes": [
+      "pod enumeration",
+      "node access",
+      "workload visibility"
+    ],
+    "safe_checks": [
+      "/pods endpoint",
+      "auth required check"
+    ],
+    "business_context": "Kubernetes node agent interface."
+  },
+  "PORTAINER": {
+    "ports": [
+      9000,
+      9443
+    ],
+    "category": "Container Infrastructure",
+    "risk_themes": [
+      "container management",
+      "orchestration exposure",
+      "credential attacks"
+    ],
+    "safe_checks": [
+      "title check",
+      "auth required check"
+    ],
+    "business_context": "Web management UI for Docker or Kubernetes environments."
+  },
+  "GRAFANA": {
+    "ports": [
+      3000
+    ],
+    "category": "Monitoring and Logs",
+    "risk_themes": [
+      "dashboard exposure",
+      "data source exposure",
+      "credential attacks"
+    ],
+    "safe_checks": [
+      "title check",
+      "auth required check"
+    ],
+    "business_context": "Monitoring dashboard connected to infrastructure and application metrics."
+  },
+  "PROMETHEUS": {
+    "ports": [
+      9090
+    ],
+    "category": "Monitoring and Logs",
+    "risk_themes": [
+      "metric exposure",
+      "service discovery leakage",
+      "infrastructure visibility"
+    ],
+    "safe_checks": [
+      "HTTP endpoint check",
+      "targets page check"
+    ],
+    "business_context": "Monitoring system that can reveal service names, targets, and infrastructure metadata."
+  },
+  "PRINTER_RAW": {
+    "ports": [
+      9100
+    ],
+    "category": "Printers and Peripherals",
+    "risk_themes": [
+      "unauthorized printing",
+      "device enumeration",
+      "printer abuse"
+    ],
+    "safe_checks": [
+      "port check",
+      "banner grab"
+    ],
+    "business_context": "Raw print service common on network printers."
+  },
+  "IPP": {
+    "ports": [
+      631
+    ],
+    "category": "Printers and Peripherals",
+    "risk_themes": [
+      "printer enumeration",
+      "job abuse",
+      "management exposure"
+    ],
+    "safe_checks": [
+      "HTTP check",
+      "CUPS page check"
+    ],
+    "business_context": "Internet Printing Protocol, often found on printers and CUPS servers."
+  },
+  "RTSP": {
+    "ports": [
+      554
+    ],
+    "category": "IoT and Cameras",
+    "risk_themes": [
+      "video feed exposure",
+      "camera discovery",
+      "default credentials"
+    ],
+    "safe_checks": [
+      "RTSP OPTIONS",
+      "banner grab"
+    ],
+    "business_context": "Streaming protocol often associated with cameras, DVRs, and media devices."
+  },
+  "UPNP": {
+    "ports": [
+      1900
+    ],
+    "category": "Network Discovery",
+    "risk_themes": [
+      "device discovery",
+      "unsafe port mapping",
+      "topology leakage"
+    ],
+    "safe_checks": [
+      "SSDP discovery"
+    ],
+    "business_context": "Consumer/IoT discovery and automatic port mapping protocol."
+  },
+  "ADB": {
+    "ports": [
+      5555
+    ],
+    "category": "Mobile and IoT",
+    "risk_themes": [
+      "Android device control",
+      "debug interface exposure"
+    ],
+    "safe_checks": [
+      "connectivity check"
+    ],
+    "business_context": "Android Debug Bridge often indicates exposed Android or embedded device debugging."
+  },
+  "TR069": {
+    "ports": [
+      7547
+    ],
+    "category": "Router and CPE Management",
+    "risk_themes": [
+      "router management exposure",
+      "ISP device management",
+      "CPE compromise"
+    ],
+    "safe_checks": [
+      "HTTP title",
+      "banner grab"
+    ],
+    "business_context": "Management protocol commonly associated with routers and ISP customer premises equipment."
+  }
+}

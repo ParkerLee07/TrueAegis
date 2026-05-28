@@ -1,0 +1,136 @@
+[
+  {
+    "role": "Likely Active Directory Domain Controller",
+    "confidence_base": 85,
+    "services_any": [
+      "KERBEROS_EXPOSED",
+      "LDAP_EXPOSED",
+      "LDAPS_EXPOSED",
+      "LDAP_GLOBAL_CATALOG_EXPOSED",
+      "LDAPS_GLOBAL_CATALOG_EXPOSED"
+    ],
+    "services_related": [
+      "SMB_EXPOSED"
+    ],
+    "why": "Identity and SMB services together are strongly associated with Windows domain infrastructure.",
+    "questions": [
+      "Is this host expected to provide domain services?",
+      "Is it reachable outside the server/admin network?"
+    ]
+  },
+  {
+    "role": "Likely Windows Administrative Host",
+    "confidence_base": 72,
+    "services_any": [
+      "SMB_EXPOSED",
+      "NETBIOS_SMB_EXPOSED"
+    ],
+    "services_related": [
+      "RDP_EXPOSED"
+    ],
+    "why": "SMB and RDP together often indicate a Windows host that supports remote administration.",
+    "questions": [
+      "Is RDP required?",
+      "Are administrative accounts protected by MFA or gateway access?"
+    ]
+  },
+  {
+    "role": "Likely Container Infrastructure",
+    "confidence_base": 88,
+    "services_any": [
+      "DOCKER_API_EXPOSED",
+      "DOCKER_TLS_EXPOSED",
+      "PORTAINER_EXPOSED",
+      "PORTAINER_HTTPS_EXPOSED"
+    ],
+    "services_related": [],
+    "why": "Docker or container management ports indicate infrastructure that may control workloads or host-level resources.",
+    "questions": [
+      "Is remote container administration expected?",
+      "Is access restricted and authenticated?"
+    ]
+  },
+  {
+    "role": "Likely Kubernetes Infrastructure",
+    "confidence_base": 88,
+    "services_any": [
+      "KUBERNETES_API_EXPOSED",
+      "KUBELET_EXPOSED",
+      "KUBELET_READONLY_EXPOSED"
+    ],
+    "services_related": [],
+    "why": "Kubernetes API or kubelet services indicate cluster control-plane or node exposure.",
+    "questions": [
+      "Is the Kubernetes API limited to admins?",
+      "Are kubelet anonymous endpoints disabled?"
+    ]
+  },
+  {
+    "role": "Likely Database Server",
+    "confidence_base": 70,
+    "services_any": [
+      "MSSQL_EXPOSED",
+      "MYSQL_EXPOSED",
+      "POSTGRES_EXPOSED",
+      "REDIS_EXPOSED",
+      "MONGODB_EXPOSED",
+      "ORACLE_EXPOSED",
+      "ELASTICSEARCH_EXPOSED"
+    ],
+    "services_related": [],
+    "why": "Database or data service ports suggest the host may store application or operational data.",
+    "questions": [
+      "Which applications require access?",
+      "Is database access segmented from user networks?"
+    ]
+  },
+  {
+    "role": "Likely Monitoring or Logging Host",
+    "confidence_base": 68,
+    "services_any": [
+      "GRAFANA_EXPOSED",
+      "PROMETHEUS_EXPOSED",
+      "KIBANA_EXPOSED",
+      "ELASTICSEARCH_EXPOSED"
+    ],
+    "services_related": [],
+    "why": "Monitoring and logging services suggest the host may expose infrastructure telemetry or operational data.",
+    "questions": [
+      "Are dashboards authenticated?",
+      "Do logs or metrics reveal secrets or internal topology?"
+    ]
+  },
+  {
+    "role": "Likely Printer or Print Server",
+    "confidence_base": 82,
+    "services_any": [
+      "PRINTER_9100_EXPOSED",
+      "IPP_EXPOSED"
+    ],
+    "services_related": [],
+    "why": "Raw print or IPP services are common on network printers and print servers.",
+    "questions": [
+      "Is this device isolated to a printer VLAN?",
+      "Are admin interfaces restricted?"
+    ]
+  },
+  {
+    "role": "Likely Camera or Embedded Device",
+    "confidence_base": 76,
+    "services_any": [
+      "RTSP_EXPOSED",
+      "TR069_EXPOSED",
+      "ADB_EXPOSED"
+    ],
+    "services_related": [
+      "HTTP_EXPOSED",
+      "HTTPS_EXPOSED"
+    ],
+    "why": "Streaming, CPE management, or debug interfaces suggest embedded or IoT device exposure.",
+    "questions": [
+      "Is firmware current?",
+      "Are default credentials removed?",
+      "Is the device segmented?"
+    ]
+  }
+]

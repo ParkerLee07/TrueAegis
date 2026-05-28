@@ -1,0 +1,36 @@
+{
+  "openings": [
+    "The assessment identified several exposure patterns that may influence operational risk.",
+    "TrueAegis observed services and relationships that help describe the environment's attack surface.",
+    "The current dataset suggests the following exposure themes and prioritization areas.",
+    "This report emphasizes validated exposure, environmental context, and correlated service relationships."
+  ],
+  "risk_phrases": [
+    "should be reviewed in context of business need and access scope",
+    "may be acceptable if restricted to trusted administrative networks",
+    "requires prioritization when paired with weak authentication or broad network reachability",
+    "is most concerning when combined with other management or identity services"
+  ],
+  "validation_phrases": {
+    "CONFIRMED": [
+      "Validation produced a strong signal that the exposure is reachable and relevant.",
+      "The finding was confirmed by safe validation checks.",
+      "The service responded in a way that increases confidence in this finding."
+    ],
+    "PARTIALLY CONFIRMED": [
+      "Validation confirmed reachability but did not prove a high-risk configuration.",
+      "The exposure appears present, though additional authorized review is recommended.",
+      "The finding has moderate confidence based on safe validation output."
+    ],
+    "REACHABLE": [
+      "The port is reachable, but stronger risk indicators were not observed.",
+      "Reachability was confirmed, but the configuration requires additional context.",
+      "The service is present, though risk depends on authentication and segmentation."
+    ],
+    "NOT VALIDATED": [
+      "This finding has not yet been validated beyond scan evidence.",
+      "Additional safe validation would improve confidence in this result.",
+      "The current evidence is scan-based and should be interpreted as preliminary."
+    ]
+  }
+}

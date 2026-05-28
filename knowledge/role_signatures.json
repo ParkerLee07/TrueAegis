@@ -1,0 +1,115 @@
+{
+  "Likely Active Directory Domain Controller": {
+    "requires_any_ports": [
+      88,
+      389,
+      445
+    ],
+    "requires_services": [
+      "KERBEROS",
+      "LDAP",
+      "SMB"
+    ],
+    "confidence": "HIGH",
+    "description": "Host exposes identity and Windows file sharing services commonly associated with AD domain controllers."
+  },
+  "Likely Windows Server": {
+    "requires_any_ports": [
+      445,
+      3389
+    ],
+    "requires_services": [
+      "SMB",
+      "RDP"
+    ],
+    "confidence": "MEDIUM",
+    "description": "Host exposes Windows file sharing or remote desktop services."
+  },
+  "Likely Linux/Web Server": {
+    "requires_any_ports": [
+      22,
+      80,
+      443
+    ],
+    "requires_services": [
+      "SSH",
+      "HTTP",
+      "HTTPS"
+    ],
+    "confidence": "MEDIUM",
+    "description": "Host exposes SSH and web services common on Linux web infrastructure."
+  },
+  "Likely Database Server": {
+    "requires_any_ports": [
+      1433,
+      3306,
+      5432,
+      27017,
+      6379,
+      9200
+    ],
+    "requires_services": [
+      "MSSQL",
+      "MYSQL",
+      "POSTGRES",
+      "MONGODB",
+      "REDIS",
+      "ELASTICSEARCH"
+    ],
+    "confidence": "MEDIUM",
+    "description": "Host exposes one or more data storage services."
+  },
+  "Likely Container Host": {
+    "requires_any_ports": [
+      2375,
+      2376,
+      9000,
+      9443
+    ],
+    "requires_services": [
+      "DOCKER_API",
+      "PORTAINER"
+    ],
+    "confidence": "HIGH",
+    "description": "Host exposes container management or Docker-related services."
+  },
+  "Likely Kubernetes Node or Control Plane": {
+    "requires_any_ports": [
+      6443,
+      10250,
+      10255
+    ],
+    "requires_services": [
+      "KUBERNETES_API",
+      "KUBELET"
+    ],
+    "confidence": "HIGH",
+    "description": "Host exposes Kubernetes control plane or kubelet-related services."
+  },
+  "Likely Printer": {
+    "requires_any_ports": [
+      9100,
+      631
+    ],
+    "requires_services": [
+      "PRINTER_RAW",
+      "IPP"
+    ],
+    "confidence": "HIGH",
+    "description": "Host exposes printing services common to network printers or CUPS print servers."
+  },
+  "Likely Camera or DVR": {
+    "requires_any_ports": [
+      554,
+      80,
+      443
+    ],
+    "requires_services": [
+      "RTSP",
+      "HTTP",
+      "HTTPS"
+    ],
+    "confidence": "MEDIUM",
+    "description": "Host exposes RTSP and possible web management services."
+  }
+}

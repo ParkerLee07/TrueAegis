@@ -1,0 +1,165 @@
+[
+  {
+    "id": "WINDOWS_LATERAL_MOVEMENT",
+    "name": "Windows lateral movement surface",
+    "severity": "HIGH",
+    "requires_any": [
+      "SMB_EXPOSED"
+    ],
+    "requires_related": [
+      "RDP_EXPOSED",
+      "LDAP_EXPOSED",
+      "LDAPS_EXPOSED",
+      "KERBEROS_EXPOSED"
+    ],
+    "narratives": [
+      "SMB combined with remote administration or identity services may increase lateral movement risk.",
+      "This cluster suggests Windows administrative exposure that should be reviewed for credential reuse and access controls."
+    ]
+  },
+  {
+    "id": "REMOTE_ACCESS_CLUSTER",
+    "name": "Remote access cluster",
+    "severity": "HIGH",
+    "minimum_count": 2,
+    "services": [
+      "SSH_EXPOSED",
+      "RDP_EXPOSED",
+      "TELNET_EXPOSED",
+      "VNC_EXPOSED"
+    ],
+    "narratives": [
+      "Multiple remote access services were identified, increasing the likelihood of credential-based attack paths.",
+      "Remote access clustering can create repeated opportunities for password reuse, brute force, or unauthorized administration."
+    ]
+  },
+  {
+    "id": "DATA_SERVICES_CLUSTER",
+    "name": "Exposed data services cluster",
+    "severity": "HIGH",
+    "minimum_count": 2,
+    "services": [
+      "MSSQL_EXPOSED",
+      "MYSQL_EXPOSED",
+      "POSTGRES_EXPOSED",
+      "REDIS_EXPOSED",
+      "MONGODB_EXPOSED",
+      "ELASTICSEARCH_EXPOSED",
+      "ORACLE_EXPOSED"
+    ],
+    "narratives": [
+      "Multiple data services were detected, which may increase the environment's sensitive data exposure if access controls are weak.",
+      "Database clustering should be reviewed for segmentation, authentication, and least-privilege access."
+    ]
+  },
+  {
+    "id": "CICD_CONTAINER_PATH",
+    "name": "CI/CD to container control path",
+    "severity": "CRITICAL",
+    "requires_any": [
+      "JENKINS_EXPOSED"
+    ],
+    "requires_related": [
+      "DOCKER_API_EXPOSED",
+      "PORTAINER_EXPOSED",
+      "KUBERNETES_API_EXPOSED",
+      "KUBELET_EXPOSED"
+    ],
+    "narratives": [
+      "CI/CD tooling and container management surfaces together may create a route from build automation to infrastructure control.",
+      "This combination deserves priority review because build systems often hold credentials, deployment access, and automation privileges."
+    ]
+  },
+  {
+    "id": "ELK_STACK_EXPOSURE",
+    "name": "Elastic/Kibana exposure cluster",
+    "severity": "HIGH",
+    "requires_any": [
+      "ELASTICSEARCH_EXPOSED"
+    ],
+    "requires_related": [
+      "KIBANA_EXPOSED"
+    ],
+    "narratives": [
+      "Elasticsearch and Kibana together may expose logs, indexed records, dashboards, or operational telemetry.",
+      "This cluster may reveal sensitive application events, user identifiers, internal service names, or infrastructure activity."
+    ]
+  },
+  {
+    "id": "IOT_CAMERA_MANAGEMENT",
+    "name": "IoT camera management surface",
+    "severity": "MEDIUM",
+    "requires_any": [
+      "RTSP_EXPOSED"
+    ],
+    "requires_related": [
+      "HTTP_EXPOSED",
+      "HTTPS_EXPOSED",
+      "TR069_EXPOSED"
+    ],
+    "narratives": [
+      "Streaming and web management services together may indicate camera or DVR management exposure.",
+      "IoT/camera clusters should be reviewed for default credentials, firmware age, and network segmentation."
+    ]
+  },
+  {
+    "id": "PRINTER_SURFACE",
+    "name": "Printer management surface",
+    "severity": "LOW",
+    "minimum_count": 1,
+    "services": [
+      "PRINTER_9100_EXPOSED",
+      "IPP_EXPOSED"
+    ],
+    "narratives": [
+      "Printer-related services were observed and should usually be limited to trusted print servers or internal administrative networks."
+    ]
+  },
+  {
+    "id": "LEGACY_PLAINTEXT_PROTOCOLS",
+    "name": "Legacy plaintext protocol exposure",
+    "severity": "HIGH",
+    "minimum_count": 1,
+    "services": [
+      "TELNET_EXPOSED",
+      "FTP_EXPOSED",
+      "POP3_EXPOSED",
+      "IMAP_EXPOSED"
+    ],
+    "narratives": [
+      "Legacy plaintext or weakly protected protocols increase credential and data exposure risk.",
+      "Plaintext protocol exposure should be reviewed for replacement with encrypted alternatives."
+    ]
+  },
+  {
+    "id": "MONITORING_VISIBILITY_CLUSTER",
+    "name": "Monitoring visibility cluster",
+    "severity": "MEDIUM",
+    "minimum_count": 2,
+    "services": [
+      "GRAFANA_EXPOSED",
+      "PROMETHEUS_EXPOSED",
+      "KIBANA_EXPOSED"
+    ],
+    "narratives": [
+      "Monitoring interfaces may reveal internal service names, metrics, targets, and operational details.",
+      "Even when authentication is present, exposed monitoring surfaces can provide valuable reconnaissance context."
+    ]
+  },
+  {
+    "id": "IDENTITY_EXPOSURE",
+    "name": "Identity service exposure",
+    "severity": "HIGH",
+    "minimum_count": 2,
+    "services": [
+      "KERBEROS_EXPOSED",
+      "LDAP_EXPOSED",
+      "LDAPS_EXPOSED",
+      "SMB_EXPOSED"
+    ],
+    "narratives": [
+      "Identity-related services were observed together, suggesting an authentication or directory services role.",
+      "Identity infrastructure should be prioritized because compromise can affect broad areas of the environment."
+    ]
+  }
+]

@@ -1,0 +1,266 @@
+[
+  {
+    "id": "WINDOWS_LATERAL_MOVEMENT_SURFACE",
+    "name": "Windows lateral movement surface",
+    "severity": "HIGH",
+    "confidence_base": 72,
+    "requires_any": [
+      "SMB_EXPOSED",
+      "NETBIOS_SMB_EXPOSED"
+    ],
+    "requires_related": [
+      "RDP_EXPOSED",
+      "LDAP_EXPOSED",
+      "LDAPS_EXPOSED",
+      "KERBEROS_EXPOSED",
+      "LDAP_GLOBAL_CATALOG_EXPOSED",
+      "LDAPS_GLOBAL_CATALOG_EXPOSED"
+    ],
+    "why_it_matters": "SMB combined with remote administration or identity services can support enumeration, credential reuse, and lateral movement across Windows environments.",
+    "analyst_questions": [
+      "Are these hosts restricted to an administrative VLAN or VPN?",
+      "Is SMB signing enforced?",
+      "Are local administrator passwords unique across hosts?",
+      "Is RDP protected by MFA or gateway access?"
+    ],
+    "recommended_focus": [
+      "Confirm SMB and RDP exposure scope.",
+      "Review segmentation between user workstations and administrative systems.",
+      "Prioritize hosts that expose both file sharing and remote desktop."
+    ]
+  },
+  {
+    "id": "IDENTITY_INFRASTRUCTURE_EXPOSURE",
+    "name": "Identity infrastructure exposure",
+    "severity": "HIGH",
+    "confidence_base": 78,
+    "requires_any": [
+      "KERBEROS_EXPOSED",
+      "LDAP_EXPOSED",
+      "LDAPS_EXPOSED"
+    ],
+    "requires_related": [
+      "SMB_EXPOSED",
+      "LDAP_GLOBAL_CATALOG_EXPOSED",
+      "LDAPS_GLOBAL_CATALOG_EXPOSED"
+    ],
+    "why_it_matters": "Identity infrastructure is high-value because compromise or excessive exposure may affect authentication, authorization, and access across the environment.",
+    "analyst_questions": [
+      "Is this host a domain controller?",
+      "Are anonymous LDAP binds disabled?",
+      "Is access limited to trusted internal subnets?",
+      "Are authentication logs monitored for enumeration attempts?"
+    ],
+    "recommended_focus": [
+      "Validate whether the host is an Active Directory component.",
+      "Review directory service exposure and access controls.",
+      "Check whether identity services are reachable outside expected network zones."
+    ]
+  },
+  {
+    "id": "REMOTE_ACCESS_CLUSTER",
+    "name": "Remote access exposure cluster",
+    "severity": "HIGH",
+    "confidence_base": 68,
+    "minimum_count": 2,
+    "services": [
+      "SSH_EXPOSED",
+      "RDP_EXPOSED",
+      "TELNET_EXPOSED",
+      "VNC_EXPOSED"
+    ],
+    "why_it_matters": "Multiple remote access services increase the number of authentication surfaces attackers can target and may reveal inconsistent access controls.",
+    "analyst_questions": [
+      "Which remote access services are actually required?",
+      "Are all remote access paths protected by MFA or VPN?",
+      "Are failed login attempts monitored?",
+      "Are default or shared credentials still in use?"
+    ],
+    "recommended_focus": [
+      "Reduce unnecessary remote access surfaces.",
+      "Prioritize plaintext or weakly protected services first.",
+      "Standardize administrative access through a controlled path."
+    ]
+  },
+  {
+    "id": "DATA_SERVICES_CLUSTER",
+    "name": "Exposed data services cluster",
+    "severity": "HIGH",
+    "confidence_base": 70,
+    "minimum_count": 2,
+    "services": [
+      "MSSQL_EXPOSED",
+      "MYSQL_EXPOSED",
+      "POSTGRES_EXPOSED",
+      "REDIS_EXPOSED",
+      "MONGODB_EXPOSED",
+      "ELASTICSEARCH_EXPOSED",
+      "ORACLE_EXPOSED"
+    ],
+    "why_it_matters": "Multiple exposed data services can increase blast radius because application data, logs, credentials, or operational records may be reachable from more places than intended.",
+    "analyst_questions": [
+      "Are database ports reachable only from application servers?",
+      "Is authentication required on every data service?",
+      "Are sensitive datasets exposed through search or logging systems?",
+      "Is database access monitored?"
+    ],
+    "recommended_focus": [
+      "Confirm database network exposure boundaries.",
+      "Prioritize unauthenticated or validation-confirmed data services.",
+      "Review whether any data service is reachable from user or guest networks."
+    ]
+  },
+  {
+    "id": "CICD_TO_CONTAINER_CONTROL_PATH",
+    "name": "CI/CD to container infrastructure pathway",
+    "severity": "CRITICAL",
+    "confidence_base": 88,
+    "requires_any": [
+      "JENKINS_EXPOSED"
+    ],
+    "requires_related": [
+      "DOCKER_API_EXPOSED",
+      "DOCKER_TLS_EXPOSED",
+      "PORTAINER_EXPOSED",
+      "PORTAINER_HTTPS_EXPOSED",
+      "KUBERNETES_API_EXPOSED",
+      "KUBELET_EXPOSED",
+      "KUBELET_READONLY_EXPOSED"
+    ],
+    "why_it_matters": "Build systems often hold deployment credentials and automation permissions. If CI/CD exposure overlaps with container control surfaces, compromise could move from code/build access to infrastructure control.",
+    "analyst_questions": [
+      "Does Jenkins store deployment secrets or cloud credentials?",
+      "Can the CI/CD server reach Docker or Kubernetes APIs?",
+      "Is container management restricted to administrative systems?",
+      "Are build agents isolated from production infrastructure?"
+    ],
+    "recommended_focus": [
+      "Review CI/CD authentication and authorization.",
+      "Confirm container APIs require strong authentication.",
+      "Check whether build systems can administer runtime infrastructure."
+    ]
+  },
+  {
+    "id": "ELK_LOGGING_EXPOSURE",
+    "name": "Elastic/Kibana logging exposure",
+    "severity": "HIGH",
+    "confidence_base": 74,
+    "requires_any": [
+      "ELASTICSEARCH_EXPOSED",
+      "ELASTICSEARCH_TRANSPORT_EXPOSED"
+    ],
+    "requires_related": [
+      "KIBANA_EXPOSED"
+    ],
+    "why_it_matters": "Logging stacks may contain usernames, internal hostnames, application errors, request data, tokens, or operational details useful for deeper attack planning.",
+    "analyst_questions": [
+      "Does Kibana require authentication?",
+      "Do Elasticsearch indices contain sensitive logs?",
+      "Is access limited to monitoring administrators?",
+      "Are logs sanitized for secrets or tokens?"
+    ],
+    "recommended_focus": [
+      "Validate authentication on Kibana and Elasticsearch.",
+      "Review exposed indices and dashboard permissions.",
+      "Restrict log infrastructure to trusted networks."
+    ]
+  },
+  {
+    "id": "MONITORING_VISIBILITY_CLUSTER",
+    "name": "Monitoring visibility cluster",
+    "severity": "MEDIUM",
+    "confidence_base": 58,
+    "minimum_count": 2,
+    "services": [
+      "GRAFANA_EXPOSED",
+      "PROMETHEUS_EXPOSED",
+      "KIBANA_EXPOSED"
+    ],
+    "why_it_matters": "Monitoring systems can reveal internal service names, targets, uptime, software stacks, and operational patterns even when they do not directly provide system access.",
+    "analyst_questions": [
+      "Are dashboards authenticated?",
+      "Can users view data sources or credentials?",
+      "Do metrics reveal internal target names?",
+      "Are monitoring tools segmented from general user networks?"
+    ],
+    "recommended_focus": [
+      "Review anonymous dashboard access.",
+      "Restrict monitoring tools to operations networks.",
+      "Check whether metrics expose sensitive infrastructure metadata."
+    ]
+  },
+  {
+    "id": "LEGACY_PLAINTEXT_EXPOSURE",
+    "name": "Legacy plaintext protocol exposure",
+    "severity": "HIGH",
+    "confidence_base": 82,
+    "minimum_count": 1,
+    "services": [
+      "TELNET_EXPOSED",
+      "FTP_EXPOSED",
+      "POP3_EXPOSED",
+      "IMAP_EXPOSED"
+    ],
+    "why_it_matters": "Legacy plaintext protocols can expose credentials or sensitive data in transit and often indicate older devices or unmanaged systems.",
+    "analyst_questions": [
+      "Is this service still required?",
+      "Can it be replaced with an encrypted alternative?",
+      "Is the service limited to a trusted subnet?",
+      "Does the host represent legacy or unmanaged equipment?"
+    ],
+    "recommended_focus": [
+      "Prioritize Telnet and FTP first.",
+      "Identify owning team or device class.",
+      "Replace plaintext management protocols where feasible."
+    ]
+  },
+  {
+    "id": "IOT_CAMERA_MANAGEMENT_SURFACE",
+    "name": "IoT/camera management surface",
+    "severity": "MEDIUM",
+    "confidence_base": 60,
+    "requires_any": [
+      "RTSP_EXPOSED"
+    ],
+    "requires_related": [
+      "HTTP_EXPOSED",
+      "HTTPS_EXPOSED",
+      "TR069_EXPOSED"
+    ],
+    "why_it_matters": "RTSP plus web or CPE management interfaces may indicate cameras, DVRs, or embedded devices that often have weak patching and default credential risk.",
+    "analyst_questions": [
+      "Is this host a camera, DVR, or embedded appliance?",
+      "Are default credentials disabled?",
+      "Is firmware current?",
+      "Is the device isolated from user and server networks?"
+    ],
+    "recommended_focus": [
+      "Confirm device ownership and purpose.",
+      "Restrict camera and IoT systems to dedicated segments.",
+      "Review web management and stream access controls."
+    ]
+  },
+  {
+    "id": "PRINTER_INFRASTRUCTURE_SURFACE",
+    "name": "Printer infrastructure surface",
+    "severity": "LOW",
+    "confidence_base": 45,
+    "minimum_count": 1,
+    "services": [
+      "PRINTER_9100_EXPOSED",
+      "IPP_EXPOSED"
+    ],
+    "why_it_matters": "Printer services are usually lower severity but can still reveal device information, enable unauthorized printing, or expose outdated embedded systems.",
+    "analyst_questions": [
+      "Are printers reachable from non-print-server subnets?",
+      "Are printer admin panels protected?",
+      "Is firmware maintained?",
+      "Are unnecessary print protocols disabled?"
+    ],
+    "recommended_focus": [
+      "Restrict printer access to print servers and trusted users.",
+      "Disable unused print protocols.",
+      "Inventory printer devices and firmware versions."
+    ]
+  }
+]
