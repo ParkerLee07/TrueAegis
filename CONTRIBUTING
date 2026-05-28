@@ -1,0 +1,48 @@
+# Contributing
+
+Thanks for considering contributing to TrueAegis.
+
+## Good Contributions
+
+Helpful contributions include:
+
+- bug fixes
+- documentation improvements
+- validator modules
+- safer detection logic
+- UI improvements
+- knowledge base additions
+- test data
+- report formatting improvements
+
+## Rules
+
+Please keep contributions aligned with the project goal:
+
+> local exposure intelligence and defensive infrastructure analysis
+
+Avoid adding:
+
+- exploit automation
+- destructive actions
+- credential attacks
+- stealth functionality
+- unauthorized access features
+
+## Development Setup
+
+```bash
+git clone https://github.com/YOUR_USERNAME/TrueAegis.git
+cd TrueAegis
+pip install -r requirements.txt
+```
+
+## Pull Request Checklist
+
+Before opening a pull request:
+
+- [ ] code runs locally
+- [ ] no credentials or private scan data included
+- [ ] README updated if behavior changed
+- [ ] safe/authorized use assumptions preserved
+- [ ] no unnecessary dependencies added
