@@ -162,15 +162,28 @@ def validation_status_label(validation):
 
 
 def find_latest_netsniper_file():
-    netsniper_targets = Path.home() / "netsniper" / "targets"
-    json_files = sorted(netsniper_targets.glob("analysis_*.json"))
+    search_dirs = [
+        Path(os.environ.get("NETSNIPER_BASE", "")).expanduser() / "targets"
+        if os.environ.get("NETSNIPER_BASE")
+        else None,
+        Path.home() / "NetSniper" / "targets",
+        Path.home() / "netsniper" / "targets",
+    ]
+
+    json_files = []
+
+    for directory in search_dirs:
+        if directory and directory.exists():
+            json_files.extend(directory.glob("analysis_*.json"))
 
     if not json_files:
         console.print("[red]No NetSniper analysis JSON files found.[/red]")
-        console.print("[yellow]Expected location:[/yellow] ~/netsniper/targets/analysis_*.json")
+        console.print("[yellow]Expected location:[/yellow] ~/NetSniper/targets/analysis_*.json")
+        console.print("[yellow]Also checked:[/yellow] ~/netsniper/targets/analysis_*.json")
+        console.print("[yellow]Or set:[/yellow] export NETSNIPER_BASE=\"$HOME/NetSniper\"")
         sys.exit(1)
 
-    latest_file = json_files[-1]
+    latest_file = max(json_files, key=lambda path: path.stat().st_mtime)
     console.print(f"[green]Using latest NetSniper file:[/green] {latest_file}")
     return latest_file
 
