@@ -6,12 +6,13 @@ IFS=$'\n\t'
 # TrueAegis Installer
 # Kali / Debian safe version
 # =========================
-#
-# This installer avoids Kali's externally-managed Python restriction
-# by creating a project-local virtual environment instead of installing
-# packages into the system Python environment.
+
+TRUEAEGIS_REPO="${TRUEAEGIS_REPO:-https://github.com/ParkerLee07/TrueAegis.git}"
+NETSNIPER_REPO="${NETSNIPER_REPO:-https://github.com/ParkerLee07/NetSniper.git}"
 
 TRUEAEGIS_HOME="${TRUEAEGIS_HOME:-$HOME/TrueAegis}"
+NETSNIPER_BASE="${NETSNIPER_BASE:-$HOME/NetSniper}"
+
 BIN_DIR="${BIN_DIR:-$HOME/.local/bin}"
 VENV_DIR="$TRUEAEGIS_HOME/.venv"
 
@@ -29,30 +30,7 @@ error() { echo -e "${RED}[-]${RESET} $1"; }
 require_command() {
     if ! command -v "$1" >/dev/null 2>&1; then
         error "$1 is required but not installed."
-        return 1
-    fi
-}
-
-copy_dir_if_exists() {
-    local dir="$1"
-
-    if [ -d "$dir" ]; then
-        rm -rf "$TRUEAEGIS_HOME/$dir"
-        cp -r "$dir" "$TRUEAEGIS_HOME/"
-        success "Installed $dir/"
-    else
-        warn "$dir/ not found. Skipping."
-    fi
-}
-
-copy_file_if_exists() {
-    local file="$1"
-
-    if [ -f "$file" ]; then
-        cp "$file" "$TRUEAEGIS_HOME/"
-        success "Installed $file"
-    else
-        warn "$file not found. Skipping."
+        exit 1
     fi
 }
 
@@ -65,6 +43,7 @@ echo ""
 
 require_command python3
 require_command bash
+require_command git
 
 if ! python3 -m venv --help >/dev/null 2>&1; then
     error "python3-venv is required."
@@ -72,78 +51,137 @@ if ! python3 -m venv --help >/dev/null 2>&1; then
     echo "Install it with:"
     echo "  sudo apt update"
     echo "  sudo apt install python3-venv"
-    echo ""
     exit 1
 fi
 
+mkdir -p "$BIN_DIR"
+
+# -------------------------
+# Install / update TrueAegis
+# -------------------------
+if [ -d "$TRUEAEGIS_HOME/.git" ]; then
+    info "Updating existing TrueAegis repo at $TRUEAEGIS_HOME"
+    git -C "$TRUEAEGIS_HOME" pull
+else
+    info "Cloning TrueAegis into $TRUEAEGIS_HOME"
+    rm -rf "$TRUEAEGIS_HOME"
+    git clone "$TRUEAEGIS_REPO" "$TRUEAEGIS_HOME"
+fi
+
+# -------------------------
+# Install / update NetSniper
+# -------------------------
+if [ -d "$NETSNIPER_BASE/.git" ]; then
+    info "Updating existing NetSniper repo at $NETSNIPER_BASE"
+    git -C "$NETSNIPER_BASE" pull
+else
+    info "Cloning NetSniper into $NETSNIPER_BASE"
+    rm -rf "$NETSNIPER_BASE"
+    git clone "$NETSNIPER_REPO" "$NETSNIPER_BASE"
+fi
+
+# -------------------------
+# Dependency warnings
+# -------------------------
 if ! command -v nmap >/dev/null 2>&1; then
     warn "nmap not found. NetSniper scanning requires nmap."
     echo "Install with: sudo apt install nmap"
 fi
 
 if ! command -v jq >/dev/null 2>&1; then
-    warn "jq not found. NetSniper analysis requires jq."
+    warn "jq not found. NetSniper analysis may require jq."
     echo "Install with: sudo apt install jq"
 fi
 
-mkdir -p "$TRUEAEGIS_HOME"
-mkdir -p "$BIN_DIR"
-
+# -------------------------
+# Workspace setup
+# -------------------------
 for dir in reports validation_results workspace workspace/scans workspace/snapshots workspace/deltas web_logs; do
     mkdir -p "$TRUEAEGIS_HOME/$dir"
 done
 
+# -------------------------
+# Python virtual environment
+# -------------------------
 info "Creating Python virtual environment at $VENV_DIR"
 python3 -m venv "$VENV_DIR"
 
 info "Upgrading pip inside virtual environment"
 "$VENV_DIR/bin/python" -m pip install --upgrade pip
 
-if [ -f requirements.txt ]; then
-    info "Installing Python dependencies into TrueAegis virtual environment"
-    "$VENV_DIR/bin/python" -m pip install -r requirements.txt
+if [ -f "$TRUEAEGIS_HOME/requirements.txt" ]; then
+    info "Installing Python dependencies from requirements.txt"
+    "$VENV_DIR/bin/python" -m pip install -r "$TRUEAEGIS_HOME/requirements.txt"
 else
     warn "requirements.txt not found. Installing default dependencies."
     "$VENV_DIR/bin/python" -m pip install rich flask reportlab
 fi
 
-copy_file_if_exists "trueaegis.py"
-copy_file_if_exists "netsniper.sh"
-
-if [ -f "$TRUEAEGIS_HOME/netsniper.sh" ]; then
-    chmod +x "$TRUEAEGIS_HOME/netsniper.sh"
+# -------------------------
+# File permissions
+# -------------------------
+if [ -f "$TRUEAEGIS_HOME/trueaegis.py" ]; then
+    chmod +x "$TRUEAEGIS_HOME/trueaegis.py"
+else
+    error "trueaegis.py not found in $TRUEAEGIS_HOME"
+    exit 1
 fi
 
-copy_dir_if_exists "remediations"
-copy_dir_if_exists "knowledge"
-copy_dir_if_exists "intelligence"
-copy_dir_if_exists "validators"
-copy_dir_if_exists "web"
+if [ -f "$NETSNIPER_BASE/netsniper.sh" ]; then
+    chmod +x "$NETSNIPER_BASE/netsniper.sh"
+else
+    warn "netsniper.sh not found at $NETSNIPER_BASE/netsniper.sh"
+fi
 
+# -------------------------
+# Launchers
+# -------------------------
 cat > "$BIN_DIR/trueaegis" <<EOF
 #!/usr/bin/env bash
-TRUEAEGIS_HOME="$TRUEAEGIS_HOME" "$VENV_DIR/bin/python" "$TRUEAEGIS_HOME/trueaegis.py" "\$@"
-EOF
-
-cat > "$BIN_DIR/trueaegis-web" <<EOF
-#!/usr/bin/env bash
-TRUEAEGIS_HOME="$TRUEAEGIS_HOME" "$VENV_DIR/bin/python" "$TRUEAEGIS_HOME/web/app.py" "\$@"
+export TRUEAEGIS_HOME="$TRUEAEGIS_HOME"
+export NETSNIPER_BASE="$NETSNIPER_BASE"
+exec "$VENV_DIR/bin/python" "$TRUEAEGIS_HOME/trueaegis.py" "\$@"
 EOF
 
 cat > "$BIN_DIR/netsniper" <<EOF
 #!/usr/bin/env bash
-bash "$TRUEAEGIS_HOME/netsniper.sh" "\$@"
+export NETSNIPER_BASE="$NETSNIPER_BASE"
+cd "$NETSNIPER_BASE"
+
+if [ -f "./netsniper.sh" ]; then
+    exec bash "./netsniper.sh" "\$@"
+else
+    echo "[ERROR] netsniper.sh not found in $NETSNIPER_BASE"
+    exit 1
+fi
 EOF
 
+if [ -f "$TRUEAEGIS_HOME/web/app.py" ]; then
+    cat > "$BIN_DIR/trueaegis-web" <<EOF
+#!/usr/bin/env bash
+export TRUEAEGIS_HOME="$TRUEAEGIS_HOME"
+export NETSNIPER_BASE="$NETSNIPER_BASE"
+exec "$VENV_DIR/bin/python" "$TRUEAEGIS_HOME/web/app.py" "\$@"
+EOF
+    chmod +x "$BIN_DIR/trueaegis-web"
+else
+    warn "web/app.py not found. Skipping trueaegis-web launcher."
+fi
+
 chmod +x "$BIN_DIR/trueaegis"
-chmod +x "$BIN_DIR/trueaegis-web"
 chmod +x "$BIN_DIR/netsniper"
 
 success "Created launchers:"
 echo "  $BIN_DIR/trueaegis"
-echo "  $BIN_DIR/trueaegis-web"
 echo "  $BIN_DIR/netsniper"
 
+if [ -f "$BIN_DIR/trueaegis-web" ]; then
+    echo "  $BIN_DIR/trueaegis-web"
+fi
+
+# -------------------------
+# PATH handling
+# -------------------------
 if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
     warn "$BIN_DIR is not currently in your PATH."
 
@@ -162,11 +200,15 @@ fi
 echo ""
 success "TrueAegis installation complete."
 echo ""
+echo "Configured paths:"
+echo "  TRUEAEGIS_HOME=$TRUEAEGIS_HOME"
+echo "  NETSNIPER_BASE=$NETSNIPER_BASE"
+echo "  VENV_DIR=$VENV_DIR"
+echo ""
 echo "Run:"
 echo "  trueaegis"
-echo "  trueaegis-web"
 echo "  netsniper"
-echo ""
-echo "Python dependencies were installed safely into:"
-echo "  $VENV_DIR"
+if [ -f "$BIN_DIR/trueaegis-web" ]; then
+    echo "  trueaegis-web"
+fi
 echo ""
