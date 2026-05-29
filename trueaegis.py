@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+import os
 import sys
 from pathlib import Path
 from datetime import datetime
@@ -53,6 +54,13 @@ SCAN_HISTORY_DIR = WORKSPACE_DIR / "scans"
 SNAPSHOT_DIR = WORKSPACE_DIR / "snapshots"
 DELTA_DIR = WORKSPACE_DIR / "deltas"
 WORKSPACE_METADATA = WORKSPACE_DIR / "metadata.json"
+
+# NetSniper is a separate project/repository, so TrueAegis must not assume
+# it lives inside the TrueAegis folder. This value can be set with:
+#   export NETSNIPER_BASE="$HOME/NetSniper"
+# or passed at runtime with:
+#   python3 trueaegis.py --netsniper-base "$HOME/NetSniper"
+NETSNIPER_BASE_OVERRIDE = os.environ.get("NETSNIPER_BASE") or os.environ.get("NETSNIPER_HOME")
 
 
 def load_json(path):
@@ -122,16 +130,93 @@ def validation_status_label(validation):
     return "UNKNOWN"
 
 
+def unique_paths(paths):
+    seen = set()
+    unique = []
+
+    for path in paths:
+        if not path:
+            continue
+
+        expanded = Path(path).expanduser()
+        key = str(expanded)
+
+        if key not in seen:
+            seen.add(key)
+            unique.append(expanded)
+
+    return unique
+
+
+def netsniper_base_candidates():
+    """Return likely NetSniper locations.
+
+    NetSniper is intentionally treated as a separate repo from TrueAegis.
+    GitHub may clone it as ~/NetSniper, while older local installs may use
+    ~/netsniper. Linux paths are case-sensitive, so we check both.
+    """
+    return unique_paths([
+        NETSNIPER_BASE_OVERRIDE,
+        Path.home() / "netsniper",
+        Path.home() / "NetSniper",
+        Path.home() / "NETSNIPER",
+        BASE_DIR / "netsniper",
+        BASE_DIR / "NetSniper",
+        BASE_DIR.parent / "netsniper",
+        BASE_DIR.parent / "NetSniper",
+    ])
+
+
+def netsniper_analysis_locations(base_dir):
+    """Return likely folders containing NetSniper analysis JSON output."""
+    return unique_paths([
+        base_dir / "targets",
+        base_dir / "analysis",
+        base_dir / "reports",
+        base_dir,
+    ])
+
+
+def find_netsniper_analysis_files():
+    files = []
+
+    for base_dir in netsniper_base_candidates():
+        if not base_dir.exists():
+            continue
+
+        for analysis_dir in netsniper_analysis_locations(base_dir):
+            if not analysis_dir.exists():
+                continue
+
+            files.extend(analysis_dir.glob("analysis_*.json"))
+            files.extend(analysis_dir.glob("netsniper_analysis_*.json"))
+            files.extend(analysis_dir.glob("findings_*.json"))
+
+    # De-duplicate while preserving Path objects.
+    return unique_paths(files)
+
+
 def find_latest_netsniper_file():
-    netsniper_targets = Path.home() / "netsniper" / "targets"
-    json_files = sorted(netsniper_targets.glob("analysis_*.json"))
+    json_files = find_netsniper_analysis_files()
 
     if not json_files:
         console.print("[red]No NetSniper analysis JSON files found.[/red]")
-        console.print("[yellow]Expected location:[/yellow] ~/netsniper/targets/analysis_*.json")
+        console.print("[yellow]TrueAegis looked in these NetSniper base locations:[/yellow]")
+
+        for base_dir in netsniper_base_candidates():
+            console.print(f"  - {base_dir}")
+
+        console.print("\n[yellow]Expected one of these files:[/yellow]")
+        console.print("  - targets/analysis_*.json")
+        console.print("  - analysis/analysis_*.json")
+        console.print("  - reports/analysis_*.json")
+        console.print("\n[yellow]Fix options:[/yellow]")
+        console.print('  export NETSNIPER_BASE="$HOME/NetSniper"')
+        console.print('  python3 trueaegis.py --netsniper-base "$HOME/NetSniper" --menu')
+        console.print("  python3 trueaegis.py /path/to/analysis_file.json")
         sys.exit(1)
 
-    latest_file = json_files[-1]
+    latest_file = max(json_files, key=lambda path: path.stat().st_mtime)
     console.print(f"[green]Using latest NetSniper file:[/green] {latest_file}")
     return latest_file
 
@@ -1343,18 +1428,32 @@ def show_menu():
 
 
 def main():
-    validate_mode = "--validate" in sys.argv
-    report_mode = "--report" in sys.argv
-    pdf_mode = "--pdf" in sys.argv
-    quiet_mode = "--quiet" in sys.argv
-    menu_mode = "--menu" in sys.argv
-    snapshot_mode = "--snapshot" in sys.argv
-    delta_mode = "--delta" in sys.argv
-    dashboard_mode = "--dashboard" in sys.argv
-    web_mode = "--web" in sys.argv
+    global NETSNIPER_BASE_OVERRIDE
+
+    raw_args = sys.argv[1:]
+
+    if "--netsniper-base" in raw_args:
+        index = raw_args.index("--netsniper-base")
+
+        if index + 1 >= len(raw_args):
+            console.print("[red]Missing value for --netsniper-base[/red]")
+            sys.exit(1)
+
+        NETSNIPER_BASE_OVERRIDE = raw_args[index + 1]
+        del raw_args[index:index + 2]
+
+    validate_mode = "--validate" in raw_args
+    report_mode = "--report" in raw_args
+    pdf_mode = "--pdf" in raw_args
+    quiet_mode = "--quiet" in raw_args
+    menu_mode = "--menu" in raw_args
+    snapshot_mode = "--snapshot" in raw_args
+    delta_mode = "--delta" in raw_args
+    dashboard_mode = "--dashboard" in raw_args
+    web_mode = "--web" in raw_args
 
     ignored_flags = ("--validate", "--report", "--pdf", "--quiet", "--menu", "--snapshot", "--delta", "--dashboard", "--web")
-    args = [arg for arg in sys.argv[1:] if arg not in ignored_flags]
+    args = [arg for arg in raw_args if arg not in ignored_flags]
 
     if snapshot_mode:
         run_platform_snapshot(validate_mode=validate_mode or True, show_output=True)
@@ -1372,7 +1471,7 @@ def main():
         launch_web_dashboard()
         return
 
-    if len(sys.argv) == 1 or menu_mode:
+    if not raw_args or menu_mode:
         show_menu()
         return
 
