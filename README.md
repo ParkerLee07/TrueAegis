@@ -79,7 +79,7 @@ NetSniper outputs TrueAegis-compatible JSON:
   "device_type": "Web Server",
   "severity": "MEDIUM",
   "score": 4,
-  "scanner_version": "v1.2",
+  "scanner_version": "v1.3",
   "timestamp": "20260528-145014",
   "findings": [
     {
