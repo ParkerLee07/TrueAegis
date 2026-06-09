@@ -99,8 +99,13 @@ NetSniper outputs TrueAegis-compatible JSON:
 TrueAegis can classify findings as:
 
 - Confirmed
+- Protected
 - Partially confirmed
 - Reachable
+- Protocol mismatch
+- Dependency missing
+- Timeout
+- Inconclusive
 - Not reachable
 - Not validated
 
