@@ -43,7 +43,7 @@ except ImportError:
 
 
 console = Console()
-TRUEAEGIS_VERSION = "v1.0-beta"
+TRUEAEGIS_VERSION = "v1.1-beta"
 
 BASE_DIR = Path(__file__).resolve().parent
 REMEDIATION_DB = BASE_DIR / "remediations" / "exposures.json"
