@@ -341,7 +341,7 @@ See [`ROADMAP.md`](ROADMAP.md).
 Current suggested release label:
 
 ```text
-v1.1.0-beta
+v1.1-beta
 ```
 
 TrueAegis is stable enough for controlled early release, testing, and portfolio use, but should still be considered beta software.
