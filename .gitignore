@@ -36,3 +36,6 @@ credentials.*
 .vscode/
 .idea/
 *.swp
+
+# Temporary patch backups
+*.bak-*
