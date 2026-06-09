@@ -322,20 +322,39 @@ def by_host(flattened):
 
 
 def confidence_from_validation(findings, matched_ids, base):
+    """
+    Adjust correlation confidence using structured validation evidence.
+    """
+
     statuses = Counter(
         item["validation_status"]
         for item in findings
         if item["finding_id"] in matched_ids
     )
 
+    weights = {
+        "CONFIRMED": 8,
+        "PROTECTED": 5,
+        "PARTIALLY CONFIRMED": 4,
+        "REACHABLE": 2,
+        "DEPENDENCY MISSING": 0,
+        "TIMEOUT": -1,
+        "INCONCLUSIVE": -1,
+        "PROTOCOL MISMATCH": -8,
+        "NOT REACHABLE": -6,
+        "UNKNOWN": 0,
+        "NOT VALIDATED": 0,
+    }
+
     confidence = base
-    confidence += statuses.get("CONFIRMED", 0) * 8
-    confidence += statuses.get("PARTIALLY CONFIRMED", 0) * 4
-    confidence += statuses.get("REACHABLE", 0) * 2
-    confidence -= statuses.get("NOT REACHABLE", 0) * 6
 
-    return max(0, min(100, confidence))
+    for status, count in statuses.items():
+        confidence += weights.get(status, 0) * count
 
+    return max(
+        0,
+        min(100, confidence),
+    )
 
 def rule_matches(rule, findings):
     ids = [item["finding_id"] for item in findings]

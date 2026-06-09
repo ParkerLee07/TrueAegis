@@ -93,6 +93,11 @@ if ! command -v jq >/dev/null 2>&1; then
     echo "Install with: sudo apt install jq"
 fi
 
+if ! command -v smbclient >/dev/null 2>&1; then
+  warn "smbclient not found. TrueAegis SMB validation will report DEPENDENCY_MISSING."
+  echo "Install with: sudo apt install smbclient"
+fi
+
 # -------------------------
 # Workspace setup
 # -------------------------

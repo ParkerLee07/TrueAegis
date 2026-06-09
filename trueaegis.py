@@ -134,30 +134,109 @@ def confidence_modifier(confidence):
     return modifiers.get(confidence, 0)
 
 
+VALIDATION_REPORT_STATUSES = [
+    "CONFIRMED",
+    "PROTECTED",
+    "PARTIALLY CONFIRMED",
+    "REACHABLE",
+    "PROTOCOL MISMATCH",
+    "DEPENDENCY MISSING",
+    "TIMEOUT",
+    "INCONCLUSIVE",
+    "NOT REACHABLE",
+    "NOT VALIDATED",
+    "UNKNOWN",
+]
+
+
+def validation_status_modifier(status):
+    """
+    Adjust analyst-facing triage priority based on validation evidence.
+
+    Intrinsic service risk remains separate from evidence quality.
+    """
+
+    modifiers = {
+        "CONFIRMED": 3,
+        "PROTECTED": 0,
+        "PARTIALLY_CONFIRMED": 0,
+        "REACHABLE": -1,
+        "PROTOCOL_MISMATCH": -6,
+        "DEPENDENCY_MISSING": 0,
+        "TIMEOUT": -1,
+        "INCONCLUSIVE": -1,
+        "NOT_REACHABLE": -8,
+        "UNKNOWN": 0,
+    }
+
+    return modifiers.get(
+        str(status or "UNKNOWN").strip().upper(),
+        0,
+    )
+
+
 def adjusted_priority_score(base_score, validation):
     if not validation:
         return base_score
 
-    adjusted = base_score + confidence_modifier(validation.get("confidence", "UNKNOWN"))
+    adjusted = (
+        base_score
+        + confidence_modifier(
+            validation.get("confidence", "UNKNOWN")
+        )
+        + validation_status_modifier(
+            validation.get("status", "UNKNOWN")
+        )
+    )
 
-    if validation.get("validated") is False:
+    # Compatibility fallback for saved results produced before v1.1.
+    if (
+        not validation.get("status")
+        and validation.get("validated") is False
+    ):
         adjusted -= 3
 
-    return max(0, min(30, adjusted))
-
+    return max(
+        0,
+        min(30, adjusted),
+    )
 
 def validation_status_label(validation):
     if not validation:
         return "NOT VALIDATED"
 
+    # Prefer the structured TrueAegis v1.1 status value.
+    status = str(validation.get("status", "")).strip().upper()
+
+    structured_labels = {
+        "CONFIRMED": "CONFIRMED",
+        "PARTIALLY_CONFIRMED": "PARTIALLY CONFIRMED",
+        "REACHABLE": "REACHABLE",
+        "NOT_REACHABLE": "NOT REACHABLE",
+        "PROTOCOL_MISMATCH": "PROTOCOL MISMATCH",
+        "PROTECTED": "PROTECTED",
+        "INCONCLUSIVE": "INCONCLUSIVE",
+        "DEPENDENCY_MISSING": "DEPENDENCY MISSING",
+        "TIMEOUT": "TIMEOUT",
+        "UNKNOWN": "UNKNOWN",
+    }
+
+    if status in structured_labels:
+        return structured_labels[status]
+
+    # Compatibility fallback for older saved validation records.
     if validation.get("validated") and validation.get("confidence") == "HIGH":
         return "CONFIRMED"
+
     if validation.get("validated") and validation.get("confidence") == "MEDIUM":
         return "PARTIALLY CONFIRMED"
+
     if validation.get("validated") and validation.get("confidence") == "LOW":
         return "REACHABLE"
+
     if validation.get("validated") is False:
         return "NOT REACHABLE"
+
     return "UNKNOWN"
 
 
@@ -289,35 +368,78 @@ def executive_summary_text(summary, validation_enabled):
     medium = summary["priority_counts"].get("MEDIUM", 0)
 
     confirmed = summary["validation_counts"].get("CONFIRMED", 0)
-    partially_confirmed = summary["validation_counts"].get("PARTIALLY CONFIRMED", 0)
-    reachable = summary["validation_counts"].get("REACHABLE", 0)
+    protected = summary["validation_counts"].get("PROTECTED", 0)
+
+    partially_confirmed = summary["validation_counts"].get(
+        "PARTIALLY CONFIRMED",
+        0,
+    )
+
+    reachable = summary["validation_counts"].get(
+        "REACHABLE",
+        0,
+    )
+
+    mismatch = summary["validation_counts"].get(
+        "PROTOCOL MISMATCH",
+        0,
+    )
+
+    unresolved = sum(
+        summary["validation_counts"].get(status, 0)
+        for status in [
+            "DEPENDENCY MISSING",
+            "TIMEOUT",
+            "INCONCLUSIVE",
+            "UNKNOWN",
+        ]
+    )
 
     if critical or high:
         posture = "elevated"
-        recommendation = "The highest priority should be reviewing confirmed or partially confirmed exposures involving remote access, databases, and infrastructure services."
+
+        recommendation = (
+            "The highest priority should be reviewing confirmed, protected, "
+            "and partially confirmed exposures involving remote access, "
+            "databases, and infrastructure services."
+        )
+
     elif medium:
         posture = "moderate"
-        recommendation = "The environment has moderate exposure and should be reviewed for unnecessary services and weak configurations."
+
+        recommendation = (
+            "The environment has moderate exposure and should be reviewed "
+            "for unnecessary services and weak configurations."
+        )
+
     else:
         posture = "low"
-        recommendation = "The current scan shows limited high-risk exposure, but exposed services should still be validated."
+
+        recommendation = (
+            "The current scan shows limited high-risk exposure, but exposed "
+            "services should still be validated."
+        )
 
     validation_sentence = ""
+
     if validation_enabled:
         validation_sentence = (
             f" Safe validation identified {confirmed} confirmed finding(s), "
-            f"{partially_confirmed} partially confirmed finding(s), and "
-            f"{reachable} reachable finding(s) without stronger risk indicators."
+            f"{protected} protected finding(s), "
+            f"{partially_confirmed} partially confirmed finding(s), "
+            f"{reachable} reachable finding(s) without protocol confirmation, "
+            f"{mismatch} protocol mismatch(es), and "
+            f"{unresolved} unresolved validation result(s)."
         )
 
     return (
         f"TrueAegis analyzed {summary['total_hosts']} host(s) and identified "
-        f"{summary['total_findings']} finding(s) across {summary['affected_hosts']} affected host(s). "
+        f"{summary['total_findings']} finding(s) across "
+        f"{summary['affected_hosts']} affected host(s). "
         f"The current exposure posture is assessed as {posture}."
         f"{validation_sentence} "
         f"{recommendation}"
     )
-
 
 def show_top_risks(prioritized_findings):
     if not prioritized_findings:
@@ -419,7 +541,7 @@ def generate_markdown_report(findings_file, netsniper_data, remediation_db, prio
     lines.append("")
     lines.append("## Validation Breakdown")
     lines.append("")
-    for status in ["CONFIRMED", "PARTIALLY CONFIRMED", "REACHABLE", "NOT REACHABLE", "NOT VALIDATED", "UNKNOWN"]:
+    for status in VALIDATION_REPORT_STATUSES:
         lines.append(f"- {status}: {summary['validation_counts'].get(status, 0)}")
     lines.append("")
     lines.append("## Exposure Categories")
@@ -573,8 +695,15 @@ def generate_pdf_report(findings_file, netsniper_data, remediation_db, prioritiz
         ["Affected hosts", str(summary["affected_hosts"])],
         ["Total findings", str(summary["total_findings"])],
         ["Confirmed findings", str(summary["validation_counts"].get("CONFIRMED", 0))],
+        ["Protected findings", str(summary["validation_counts"].get("PROTECTED", 0))],
         ["Partially confirmed findings", str(summary["validation_counts"].get("PARTIALLY CONFIRMED", 0))],
-        ["Reachable findings", str(summary["validation_counts"].get("REACHABLE", 0))]
+        ["Reachable findings", str(summary["validation_counts"].get("REACHABLE", 0))],
+        ["Protocol mismatches", str(summary["validation_counts"].get("PROTOCOL MISMATCH", 0))],
+        ["Dependency missing", str(summary["validation_counts"].get("DEPENDENCY MISSING", 0))],
+        ["Inconclusive or timed out", str(
+            summary["validation_counts"].get("INCONCLUSIVE", 0)
+            + summary["validation_counts"].get("TIMEOUT", 0)
+        )]
     ]
 
     overview_table = PDFTable(overview_data, colWidths=[2.7 * inch, 3.8 * inch])

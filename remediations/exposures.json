@@ -2046,5 +2046,58 @@
       "increases_risk_when_seen_with": []
     },
     "alias_of": "PRINTER_RAW_EXPOSED"
+  },
+  "PORTAINER_CANDIDATE": {
+    "display_name": "Possible Portainer or alternate web-management service",
+    "service": "portainer-candidate",
+    "ports": [
+      9000,
+      9443
+    ],
+    "category": "Unverified Service Candidate",
+    "exploitability": 3,
+    "impact": 4,
+    "priority": 3,
+    "risk": "An open TCP 9000 or 9443 port may represent Portainer, an alternate management interface, or an unrelated service. Port presence alone is not proof of Portainer.",
+    "threats": [
+      "unverified management interface",
+      "service misclassification",
+      "administrative surface review"
+    ],
+    "business_context": "Candidate finding requiring protocol fingerprinting before container-management risk is asserted.",
+    "safe_validation": [
+      "HTTP response check",
+      "HTTPS response check",
+      "Portainer fingerprint check"
+    ],
+    "remediation": [
+      "Confirm the protocol and product identity.",
+      "Review whether the listening service is expected.",
+      "Restrict unnecessary management interfaces.",
+      "Do not classify the host as container infrastructure from port presence alone."
+    ],
+    "verification": [
+      "nmap -sV -p 9000,9443 TARGET",
+      "Review HTTP and HTTPS responses for an explicit Portainer fingerprint."
+    ],
+    "report_variants": {
+      "executive": [
+        "PORTAINER was observed as part of the environment attack surface.",
+        "PORTAINER may be operationally required, but should be reviewed for exposure scope and authentication posture.",
+        "The presence of PORTAINER contributes to the environment's container infrastructure exposure."
+      ],
+      "technical": [
+        "Observed port(s): 9000, 9443.",
+        "Primary validation opportunities include: title check, auth required check.",
+        "Related risk themes: container management, orchestration exposure, credential attacks."
+      ]
+    },
+    "cross_references": {
+      "related_categories": [
+        "Container Infrastructure"
+      ],
+      "related_services": [],
+      "increases_risk_when_seen_with": []
+    }
   }
 }

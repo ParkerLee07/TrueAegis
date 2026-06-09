@@ -38,6 +38,11 @@
         <span>Confirmed</span>
         <strong>{{ validation_counts.get("CONFIRMED", 0) }}</strong>
     </div>
+
+    <div class="metric-card info">
+      <span>Protected</span>
+      <strong>{{ validation_counts.get("PROTECTED", 0) }}</strong>
+    </div>
     <div class="metric-card info">
         <span>Correlations</span>
         <strong>{{ correlation_count }}</strong>
