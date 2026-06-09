@@ -6,7 +6,7 @@ TrueAegis is currently in beta. Security fixes will target the latest public ver
 
 | Version | Supported |
 |---|---|
-| v1.0.0-beta | Yes |
+| v1.1-beta | Yes |
 | Older development builds | No |
 
 ## Reporting Security Issues
