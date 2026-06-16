@@ -184,6 +184,17 @@ Restart your terminal or reload your shell:
 source ~/.bashrc
 ```
 
+## Uninstall
+
+Remove TrueAegis launchers while keeping project files, reports, validation results, and NetSniper data:
+
+```bash
+./uninstall.sh
+./uninstall.sh --purge
+./uninstall.sh --purge-netsniper
+./uninstall.sh --purge --purge-netsniper
+```
+
 ---
 
 ## Requirements
