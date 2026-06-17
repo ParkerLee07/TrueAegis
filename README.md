@@ -167,7 +167,7 @@ It includes:
 Clone the repository:
 
 ```bash
-git clone https://github.com/parkerlee07/TrueAegis.git
+git clone https://github.com/ParkerLee07/TrueAegis.git
 cd TrueAegis
 ```
 
@@ -292,7 +292,6 @@ trueaegis --delta
 ```text
 TrueAegis/
 ├── trueaegis.py
-├── netsniper.sh
 ├── install.sh
 ├── uninstall.sh
 ├── requirements.txt
@@ -354,6 +353,8 @@ Current suggested release label:
 
 ```text
 v1.1-beta
+
+Local LLM or Ollama-based summarization is not part of the current supported v1.1-beta release scope.
 ```
 
 TrueAegis is stable enough for controlled early release, testing, and portfolio use, but should still be considered beta software.
