@@ -292,6 +292,132 @@ def show_netsniper_source_metadata():
         console.print(f"[red]Bundle quality errors:[/red] {errors}")
 
 
+def netsniper_source_metadata_record(findings_file=None):
+    metadata = dict(LAST_NETSNIPER_SOURCE_METADATA or {})
+
+    if findings_file:
+        metadata.setdefault("input_path", str(Path(findings_file).expanduser()))
+
+    keep_keys = [
+        "source_kind",
+        "input_path",
+        "source_path",
+        "bundle_dir",
+        "manifest_path",
+        "analysis_path",
+        "quality_path",
+        "schema_version",
+        "manifest_contract",
+        "legacy_schema_version",
+        "scanner_version",
+        "status",
+        "scan_id",
+        "target",
+        "requested_profile",
+        "effective_profile",
+        "profile_contract",
+        "runtime_budget_seconds",
+        "profile_duration_seconds",
+        "profile_budget_exceeded",
+        "deltaaegis_ready",
+        "quality_schema_version",
+        "quality_errors",
+        "quality_warnings",
+    ]
+
+    record = {}
+    for key in keep_keys:
+        value = metadata.get(key)
+        if value in ("", None, [], {}):
+            continue
+        record[key] = value
+
+    return record
+
+
+def netsniper_source_markdown_lines(findings_file=None):
+    metadata = netsniper_source_metadata_record(findings_file)
+
+    lines = [
+        "",
+        "## NetSniper Source Metadata",
+        "",
+    ]
+
+    if not metadata:
+        lines.append("No NetSniper source metadata was available.")
+        lines.append("")
+        return lines
+
+    fields = [
+        ("Source kind", "source_kind"),
+        ("Schema", "schema_version"),
+        ("Manifest contract", "manifest_contract"),
+        ("Legacy schema", "legacy_schema_version"),
+        ("Scanner version", "scanner_version"),
+        ("Status", "status"),
+        ("Scan ID", "scan_id"),
+        ("Target", "target"),
+        ("Requested profile", "requested_profile"),
+        ("Effective profile", "effective_profile"),
+        ("Profile contract", "profile_contract"),
+        ("Runtime budget seconds", "runtime_budget_seconds"),
+        ("Runtime duration seconds", "profile_duration_seconds"),
+        ("Budget exceeded", "profile_budget_exceeded"),
+        ("DeltaAegis ready", "deltaaegis_ready"),
+        ("Quality schema", "quality_schema_version"),
+        ("Bundle directory", "bundle_dir"),
+        ("Manifest path", "manifest_path"),
+        ("Analysis path", "analysis_path"),
+        ("Quality path", "quality_path"),
+    ]
+
+    for label, key in fields:
+        if key in metadata:
+            lines.append(f"- {label}: `{metadata[key]}`")
+
+    warnings = metadata.get("quality_warnings") or []
+    errors = metadata.get("quality_errors") or []
+
+    if warnings:
+        lines.append(f"- Bundle quality warnings: `{warnings}`")
+    if errors:
+        lines.append(f"- Bundle quality errors: `{errors}`")
+
+    lines.append("")
+    return lines
+
+
+def netsniper_source_pdf_rows(findings_file=None):
+    metadata = netsniper_source_metadata_record(findings_file)
+
+    if not metadata:
+        return []
+
+    fields = [
+        ("NetSniper source kind", "source_kind"),
+        ("NetSniper schema", "schema_version"),
+        ("NetSniper scanner version", "scanner_version"),
+        ("NetSniper status", "status"),
+        ("NetSniper scan ID", "scan_id"),
+        ("NetSniper target", "target"),
+        ("Requested profile", "requested_profile"),
+        ("Effective profile", "effective_profile"),
+        ("Runtime budget seconds", "runtime_budget_seconds"),
+        ("Runtime duration seconds", "profile_duration_seconds"),
+        ("Budget exceeded", "profile_budget_exceeded"),
+        ("DeltaAegis ready", "deltaaegis_ready"),
+        ("Quality schema", "quality_schema_version"),
+    ]
+
+    rows = []
+    for label, key in fields:
+        if key in metadata:
+            rows.append((label, str(metadata[key])))
+
+    return rows
+
+
 def replace_target(commands, target):
     return [cmd.replace("TARGET", target) for cmd in commands]
 
@@ -756,6 +882,7 @@ def generate_markdown_report(findings_file, netsniper_data, remediation_db, prio
     lines.append("")
     lines.append("---")
     lines.append("")
+    lines.extend(netsniper_source_markdown_lines(findings_file))
     lines.append("## Executive Summary")
     lines.append("")
     lines.append(executive_summary_text(summary, validation_enabled))
@@ -915,6 +1042,8 @@ def generate_pdf_report(findings_file, netsniper_data, remediation_db, prioritiz
     story.append(Spacer(1, 0.15 * inch))
     story.append(Paragraph(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", styles["BodyText"]))
     story.append(Paragraph(f"Source File: {findings_file}", styles["Small"]))
+    for label, value in netsniper_source_pdf_rows(findings_file):
+        story.append(pdf_paragraph(f"{label}: {value}", styles["Small"]))
     story.append(Paragraph(f"Validation Enabled: {validation_enabled}", styles["Small"]))
     story.append(Spacer(1, 0.25 * inch))
 
@@ -1372,6 +1501,7 @@ def build_snapshot(findings_file, netsniper_data, prioritized_findings, intellig
         "snapshot_id": timestamp,
         "created": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "source_file": str(findings_file),
+        "netsniper_source": netsniper_source_metadata_record(findings_file),
         "validation_enabled": validation_enabled,
         "host_count": len(netsniper_data),
         "finding_count": len(finding_records),
@@ -1393,20 +1523,34 @@ def save_snapshot(snapshot, source_file=None):
     snapshot_path = SNAPSHOT_DIR / f"snapshot_{snapshot_id}.json"
     snapshot_path.write_text(json.dumps(snapshot, indent=2))
 
-    if source_file and Path(source_file).exists():
+    archive_source = None
+    snapshot_source = snapshot.get("netsniper_source", {})
+    if isinstance(snapshot_source, dict) and snapshot_source.get("analysis_path"):
+        archive_source = Path(snapshot_source["analysis_path"]).expanduser()
+    elif source_file:
+        archive_source = Path(source_file).expanduser()
+
+    if archive_source and archive_source.exists() and archive_source.is_file():
         copied_scan = SCAN_HISTORY_DIR / f"netsniper_{snapshot_id}.json"
-        shutil.copy2(source_file, copied_scan)
+        shutil.copy2(archive_source, copied_scan)
         snapshot["archived_scan"] = str(copied_scan)
         snapshot_path.write_text(json.dumps(snapshot, indent=2))
 
     metadata = load_json(WORKSPACE_METADATA)
     metadata.setdefault("snapshots", [])
 
+    snapshot_source = snapshot.get("netsniper_source", {})
+    if not isinstance(snapshot_source, dict):
+        snapshot_source = {}
+
     metadata["snapshots"].append({
         "snapshot_id": snapshot_id,
         "created": snapshot["created"],
         "path": str(snapshot_path),
         "source_file": snapshot["source_file"],
+        "netsniper_schema": snapshot_source.get("schema_version", ""),
+        "netsniper_effective_profile": snapshot_source.get("effective_profile", ""),
+        "netsniper_deltaaegis_ready": snapshot_source.get("deltaaegis_ready", ""),
         "host_count": snapshot["host_count"],
         "finding_count": snapshot["finding_count"],
         "critical": snapshot["priority_counts"].get("CRITICAL", 0),

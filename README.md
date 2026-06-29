@@ -80,6 +80,8 @@ Supported NetSniper bundle contracts:
 - `netsniper-run-v3`
 - `netsniper-bundle-quality-v1`
 
+- Markdown reports, PDF reports, and platform snapshots include NetSniper source metadata for v2 bundles.
+
 ### Structured Exposure Telemetry
 
 NetSniper outputs TrueAegis-compatible JSON:

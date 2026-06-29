@@ -27,6 +27,12 @@ grep -Fq 'bundle_quality.json' trueaegis.py \
 grep -Fq 'TRUEAEGIS_ALLOW_UNREADY_BUNDLE' trueaegis.py \
     || fail "unready bundle override missing"
 
+grep -Fq 'netsniper_source_metadata_record' trueaegis.py \
+    || fail "NetSniper source metadata record helper missing"
+
+grep -Fq 'netsniper_source_markdown_lines' trueaegis.py \
+    || fail "Markdown source metadata helper missing"
+
 fixture_base="${NETSNIPER_FIXTURE_BASE:-$HOME/NetSniper/examples/deltaaegis-fixtures}"
 
 [ -d "$fixture_base" ] \
@@ -77,13 +83,67 @@ os.environ["TRUEAEGIS_ALLOW_UNREADY_BUNDLE"] = "1"
 failed_hosts = trueaegis.load_netsniper_data(failed_dir)
 assert isinstance(failed_hosts, list), type(failed_hosts)
 assert trueaegis.LAST_NETSNIPER_SOURCE_METADATA["deltaaegis_ready"] is False
+del os.environ["TRUEAEGIS_ALLOW_UNREADY_BUNDLE"]
 
 legacy_hosts = trueaegis.load_netsniper_data(quick_dir / "analysis.json")
 assert isinstance(legacy_hosts, list), type(legacy_hosts)
 assert len(legacy_hosts) == 2, len(legacy_hosts)
 assert trueaegis.LAST_NETSNIPER_SOURCE_METADATA["source_kind"] == "analysis_json"
 
-print("[PASS] TrueAegis NetSniper v2 bundle compatibility python checks passed")
+hosts = trueaegis.load_netsniper_data(quick_dir)
+remediation_db = trueaegis.load_json(trueaegis.REMEDIATION_DB)
+prioritized = trueaegis.collect_prioritized_findings(hosts, remediation_db, {})
+
+md_path = trueaegis.generate_markdown_report(
+    quick_dir,
+    hosts,
+    remediation_db,
+    prioritized,
+    validation_enabled=False,
+    intelligence=None,
+)
+md_text = md_path.read_text(encoding="utf-8")
+assert "## NetSniper Source Metadata" in md_text
+assert "netsniper-run-v3" in md_text
+assert "quick" in md_text
+
+pdf_path = None
+if trueaegis.REPORTLAB_AVAILABLE:
+    pdf_path = trueaegis.generate_pdf_report(
+        quick_dir,
+        hosts,
+        remediation_db,
+        prioritized,
+        validation_enabled=False,
+        intelligence=None,
+    )
+    assert pdf_path.exists(), pdf_path
+    assert pdf_path.stat().st_size > 0, pdf_path
+
+snapshot = trueaegis.build_snapshot(
+    quick_dir,
+    hosts,
+    prioritized,
+    intelligence=None,
+    validation_enabled=False,
+)
+source = snapshot["netsniper_source"]
+assert source["schema_version"] == "netsniper-run-v3", source
+assert source["effective_profile"] == "quick", source
+assert source["deltaaegis_ready"] is True, source
+assert source["analysis_path"].endswith("analysis.json"), source
+
+try:
+    md_path.unlink()
+except FileNotFoundError:
+    pass
+if pdf_path:
+    try:
+        pdf_path.unlink()
+    except FileNotFoundError:
+        pass
+
+print("[PASS] TrueAegis NetSniper v2 bundle/report/snapshot compatibility python checks passed")
 PY
 
 ok "TrueAegis v1.2 NetSniper v2 compatibility validation passed"
