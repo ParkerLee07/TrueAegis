@@ -43,7 +43,7 @@ except ImportError:
 
 
 console = Console()
-TRUEAEGIS_VERSION = "v1.1-beta"
+TRUEAEGIS_VERSION = "v1.2.0"
 
 BASE_DIR = Path(__file__).resolve().parent
 REMEDIATION_DB = BASE_DIR / "remediations" / "exposures.json"
@@ -72,12 +72,6 @@ def load_json(path):
 
 
 def normalize_netsniper_data(raw_data):
-    """Normalize supported NetSniper JSON shapes into a list of host records.
-
-    TrueAegis primarily expects a list of host dictionaries. This function also
-    supports common wrapper formats so future NetSniper exports do not break
-    TrueAegis immediately.
-    """
     if isinstance(raw_data, list):
         return raw_data
 
@@ -95,8 +89,333 @@ def normalize_netsniper_data(raw_data):
     sys.exit(1)
 
 
+NETSNIPER_BUNDLE_SCHEMAS = {"netsniper-run-v2", "netsniper-run-v3"}
+LAST_NETSNIPER_SOURCE_METADATA = {}
+
+
+def env_flag_enabled(name):
+    value = os.environ.get(name, "")
+    return value.strip().lower() in {"1", "true", "yes", "y", "on"}
+
+
+def normalize_manifest_files(files):
+    return files if isinstance(files, dict) else {}
+
+
+def bundle_file_from_manifest(bundle_dir, manifest, *keys, fallback=None):
+    files = normalize_manifest_files(manifest.get("files", {}))
+
+    for key in keys:
+        value = files.get(key)
+        if isinstance(value, str) and value.strip():
+            return bundle_dir / value
+
+    if fallback:
+        return bundle_dir / fallback
+
+    return None
+
+
+def resolve_netsniper_bundle_source(source_path, allow_unready=False):
+    source_path = Path(source_path).expanduser()
+
+    if source_path.is_dir():
+        bundle_dir = source_path
+        manifest_path = bundle_dir / "manifest.json"
+    elif source_path.name == "manifest.json":
+        manifest_path = source_path
+        bundle_dir = manifest_path.parent
+    else:
+        return None
+
+    if not manifest_path.exists():
+        return None
+
+    manifest = load_json(manifest_path)
+    schema_version = manifest.get("schema_version") or manifest.get("manifest_contract")
+
+    if schema_version not in NETSNIPER_BUNDLE_SCHEMAS:
+        console.print(f"[red]Unsupported NetSniper bundle schema:[/red] {schema_version}")
+        console.print("[yellow]Expected:[/yellow] netsniper-run-v2 or netsniper-run-v3")
+        sys.exit(1)
+
+    analysis_path = bundle_file_from_manifest(
+        bundle_dir,
+        manifest,
+        "analysis_json",
+        "analysis",
+        "findings_json",
+        fallback="analysis.json",
+    )
+
+    if not analysis_path or not analysis_path.exists():
+        console.print("[red]NetSniper bundle does not contain a readable analysis.json file.[/red]")
+        console.print(f"[yellow]Bundle:[/yellow] {bundle_dir}")
+        console.print(f"[yellow]Manifest:[/yellow] {manifest_path}")
+        sys.exit(1)
+
+    quality_path = bundle_file_from_manifest(
+        bundle_dir,
+        manifest,
+        "bundle_quality_json",
+        fallback="bundle_quality.json",
+    )
+
+    quality = {}
+    if quality_path and quality_path.exists():
+        quality = load_json(quality_path)
+    elif isinstance(manifest.get("quality"), dict):
+        quality = manifest.get("quality", {})
+
+    deltaaegis_ready = quality.get("deltaaegis_ready")
+    if deltaaegis_ready is False and not allow_unready:
+        console.print("[red]NetSniper bundle is not marked ready for downstream ingestion.[/red]")
+        console.print(f"[yellow]Bundle:[/yellow] {bundle_dir}")
+        console.print("[yellow]Reason:[/yellow] bundle_quality.deltaaegis_ready is false")
+        console.print("[yellow]Override only for fixture/debug review:[/yellow] export TRUEAEGIS_ALLOW_UNREADY_BUNDLE=1")
+        sys.exit(1)
+
+    return {
+        "source_kind": "netsniper_bundle",
+        "source_path": str(source_path),
+        "bundle_dir": str(bundle_dir),
+        "manifest_path": str(manifest_path),
+        "analysis_path": str(analysis_path),
+        "quality_path": str(quality_path) if quality_path else "",
+        "schema_version": schema_version,
+        "manifest_contract": manifest.get("manifest_contract", ""),
+        "legacy_schema_version": manifest.get("legacy_schema_version", ""),
+        "scanner_version": manifest.get("scanner_version", ""),
+        "status": manifest.get("status", ""),
+        "scan_id": manifest.get("scan_id", ""),
+        "target": manifest.get("target") or manifest.get("network_scope", ""),
+        "requested_profile": manifest.get("requested_profile") or manifest.get("scan_profile_requested", ""),
+        "effective_profile": manifest.get("effective_profile") or manifest.get("scan_profile_effective", ""),
+        "profile_contract": manifest.get("profile_contract", ""),
+        "runtime_budget_seconds": manifest.get("profile_runtime_budget_seconds", ""),
+        "profile_duration_seconds": manifest.get("profile_duration_seconds", ""),
+        "profile_budget_exceeded": manifest.get("profile_budget_exceeded", ""),
+        "deltaaegis_ready": deltaaegis_ready,
+        "quality_schema_version": quality.get("schema_version", ""),
+        "quality_errors": quality.get("errors", []),
+        "quality_warnings": quality.get("warnings", []),
+    }
+
+
+def resolve_netsniper_source(source_path):
+    source_path = Path(source_path).expanduser()
+    allow_unready = env_flag_enabled("TRUEAEGIS_ALLOW_UNREADY_BUNDLE")
+
+    bundle = resolve_netsniper_bundle_source(source_path, allow_unready=allow_unready)
+    if bundle:
+        return bundle
+
+    if not source_path.exists():
+        console.print(f"[red]NetSniper source not found:[/red] {source_path}")
+        sys.exit(1)
+
+    return {
+        "source_kind": "analysis_json",
+        "source_path": str(source_path),
+        "analysis_path": str(source_path),
+        "schema_version": "legacy-analysis-json",
+        "scanner_version": "",
+        "status": "",
+        "scan_id": "",
+        "target": "",
+        "requested_profile": "",
+        "effective_profile": "",
+        "profile_contract": "",
+        "runtime_budget_seconds": "",
+        "profile_duration_seconds": "",
+        "profile_budget_exceeded": "",
+        "deltaaegis_ready": "",
+        "quality_schema_version": "",
+        "quality_errors": [],
+        "quality_warnings": [],
+    }
+
+
 def load_netsniper_data(path):
-    return normalize_netsniper_data(load_json(path))
+    global LAST_NETSNIPER_SOURCE_METADATA
+
+    source = resolve_netsniper_source(path)
+    LAST_NETSNIPER_SOURCE_METADATA = source
+
+    if source.get("source_kind") == "netsniper_bundle":
+        console.print(f"[green]Using NetSniper bundle:[/green] {source.get('bundle_dir')}")
+        console.print(f"[green]Using bundle analysis:[/green] {source.get('analysis_path')}")
+    else:
+        console.print(f"[green]Using NetSniper analysis JSON:[/green] {source.get('analysis_path')}")
+
+    return normalize_netsniper_data(load_json(source["analysis_path"]))
+
+
+def show_netsniper_source_metadata():
+    metadata = LAST_NETSNIPER_SOURCE_METADATA
+    if not metadata:
+        return
+
+    table = Table(title="NetSniper Source")
+    table.add_column("Field", style="cyan")
+    table.add_column("Value", style="white")
+
+    fields = [
+        ("Source Kind", "source_kind"),
+        ("Schema", "schema_version"),
+        ("Scanner Version", "scanner_version"),
+        ("Status", "status"),
+        ("Scan ID", "scan_id"),
+        ("Target", "target"),
+        ("Requested Profile", "requested_profile"),
+        ("Effective Profile", "effective_profile"),
+        ("Runtime Budget Seconds", "runtime_budget_seconds"),
+        ("Runtime Duration Seconds", "profile_duration_seconds"),
+        ("Budget Exceeded", "profile_budget_exceeded"),
+        ("DeltaAegis Ready", "deltaaegis_ready"),
+        ("Quality Schema", "quality_schema_version"),
+    ]
+
+    for label, key in fields:
+        value = metadata.get(key)
+        if value != "" and value is not None:
+            table.add_row(label, str(value))
+
+    console.print(table)
+
+    warnings = metadata.get("quality_warnings") or []
+    errors = metadata.get("quality_errors") or []
+
+    if warnings:
+        console.print(f"[yellow]Bundle quality warnings:[/yellow] {warnings}")
+    if errors:
+        console.print(f"[red]Bundle quality errors:[/red] {errors}")
+
+
+def netsniper_source_metadata_record(findings_file=None):
+    metadata = dict(LAST_NETSNIPER_SOURCE_METADATA or {})
+
+    if findings_file:
+        metadata.setdefault("input_path", str(Path(findings_file).expanduser()))
+
+    keep_keys = [
+        "source_kind",
+        "input_path",
+        "source_path",
+        "bundle_dir",
+        "manifest_path",
+        "analysis_path",
+        "quality_path",
+        "schema_version",
+        "manifest_contract",
+        "legacy_schema_version",
+        "scanner_version",
+        "status",
+        "scan_id",
+        "target",
+        "requested_profile",
+        "effective_profile",
+        "profile_contract",
+        "runtime_budget_seconds",
+        "profile_duration_seconds",
+        "profile_budget_exceeded",
+        "deltaaegis_ready",
+        "quality_schema_version",
+        "quality_errors",
+        "quality_warnings",
+    ]
+
+    record = {}
+    for key in keep_keys:
+        value = metadata.get(key)
+        if value in ("", None, [], {}):
+            continue
+        record[key] = value
+
+    return record
+
+
+def netsniper_source_markdown_lines(findings_file=None):
+    metadata = netsniper_source_metadata_record(findings_file)
+
+    lines = [
+        "",
+        "## NetSniper Source Metadata",
+        "",
+    ]
+
+    if not metadata:
+        lines.append("No NetSniper source metadata was available.")
+        lines.append("")
+        return lines
+
+    fields = [
+        ("Source kind", "source_kind"),
+        ("Schema", "schema_version"),
+        ("Manifest contract", "manifest_contract"),
+        ("Legacy schema", "legacy_schema_version"),
+        ("Scanner version", "scanner_version"),
+        ("Status", "status"),
+        ("Scan ID", "scan_id"),
+        ("Target", "target"),
+        ("Requested profile", "requested_profile"),
+        ("Effective profile", "effective_profile"),
+        ("Profile contract", "profile_contract"),
+        ("Runtime budget seconds", "runtime_budget_seconds"),
+        ("Runtime duration seconds", "profile_duration_seconds"),
+        ("Budget exceeded", "profile_budget_exceeded"),
+        ("DeltaAegis ready", "deltaaegis_ready"),
+        ("Quality schema", "quality_schema_version"),
+        ("Bundle directory", "bundle_dir"),
+        ("Manifest path", "manifest_path"),
+        ("Analysis path", "analysis_path"),
+        ("Quality path", "quality_path"),
+    ]
+
+    for label, key in fields:
+        if key in metadata:
+            lines.append(f"- {label}: `{metadata[key]}`")
+
+    warnings = metadata.get("quality_warnings") or []
+    errors = metadata.get("quality_errors") or []
+
+    if warnings:
+        lines.append(f"- Bundle quality warnings: `{warnings}`")
+    if errors:
+        lines.append(f"- Bundle quality errors: `{errors}`")
+
+    lines.append("")
+    return lines
+
+
+def netsniper_source_pdf_rows(findings_file=None):
+    metadata = netsniper_source_metadata_record(findings_file)
+
+    if not metadata:
+        return []
+
+    fields = [
+        ("NetSniper source kind", "source_kind"),
+        ("NetSniper schema", "schema_version"),
+        ("NetSniper scanner version", "scanner_version"),
+        ("NetSniper status", "status"),
+        ("NetSniper scan ID", "scan_id"),
+        ("NetSniper target", "target"),
+        ("Requested profile", "requested_profile"),
+        ("Effective profile", "effective_profile"),
+        ("Runtime budget seconds", "runtime_budget_seconds"),
+        ("Runtime duration seconds", "profile_duration_seconds"),
+        ("Budget exceeded", "profile_budget_exceeded"),
+        ("DeltaAegis ready", "deltaaegis_ready"),
+        ("Quality schema", "quality_schema_version"),
+    ]
+
+    rows = []
+    for label, key in fields:
+        if key in metadata:
+            rows.append((label, str(metadata[key])))
+
+    return rows
 
 
 def replace_target(commands, target):
@@ -240,30 +559,76 @@ def validation_status_label(validation):
     return "UNKNOWN"
 
 
+def trueaegis_netsniper_base_candidates():
+    candidates = []
+
+    for env_name in ("NETSNIPER_BASE", "NETSNIPER_HOME"):
+        value = os.environ.get(env_name)
+        if value:
+            candidates.append(Path(value).expanduser())
+
+    candidates.extend([
+        Path.home() / "NetSniper",
+        Path.home() / "netsniper",
+        BASE_DIR.parent / "NetSniper",
+        BASE_DIR.parent / "netsniper",
+    ])
+
+    unique = []
+    seen = set()
+    for candidate in candidates:
+        resolved = str(candidate)
+        if resolved not in seen:
+            seen.add(resolved)
+            unique.append(candidate)
+
+    return unique
+
+
+def find_netsniper_bundle_manifests():
+    manifests = []
+
+    for base_dir in trueaegis_netsniper_base_candidates():
+        runs_dir = base_dir / "runs"
+        if runs_dir.exists():
+            manifests.extend(runs_dir.glob("*/manifest.json"))
+
+    return [path for path in manifests if path.exists()]
+
+
+def find_netsniper_analysis_files():
+    files = []
+
+    for base_dir in trueaegis_netsniper_base_candidates():
+        targets_dir = base_dir / "targets"
+        if targets_dir.exists():
+            files.extend(targets_dir.glob("analysis_*.json"))
+            files.extend(targets_dir.glob("netsniper_analysis_*.json"))
+
+    return [path for path in files if path.exists()]
+
+
 def find_latest_netsniper_file():
-    search_dirs = [
-        Path(os.environ.get("NETSNIPER_BASE", "")).expanduser() / "targets"
-        if os.environ.get("NETSNIPER_BASE")
-        else None,
-        Path.home() / "NetSniper" / "targets",
-        Path.home() / "netsniper" / "targets",
-    ]
+    candidates = []
 
-    json_files = []
+    candidates.extend(find_netsniper_bundle_manifests())
+    candidates.extend(find_netsniper_analysis_files())
 
-    for directory in search_dirs:
-        if directory and directory.exists():
-            json_files.extend(directory.glob("analysis_*.json"))
-
-    if not json_files:
-        console.print("[red]No NetSniper analysis JSON files found.[/red]")
-        console.print("[yellow]Expected location:[/yellow] ~/NetSniper/targets/analysis_*.json")
-        console.print("[yellow]Also checked:[/yellow] ~/netsniper/targets/analysis_*.json")
+    if not candidates:
+        console.print("[red]No NetSniper analysis JSON files or run bundles found.[/red]")
+        console.print("[yellow]Expected legacy analysis:[/yellow] ~/NetSniper/targets/analysis_*.json")
+        console.print("[yellow]Expected v2 bundles:[/yellow] ~/NetSniper/runs/<scan_id>/manifest.json")
+        console.print("[yellow]Also checked:[/yellow] ~/netsniper and NETSNIPER_BASE/NETSNIPER_HOME")
         console.print("[yellow]Or set:[/yellow] export NETSNIPER_BASE=\"$HOME/NetSniper\"")
         sys.exit(1)
 
-    latest_file = max(json_files, key=lambda path: path.stat().st_mtime)
-    console.print(f"[green]Using latest NetSniper file:[/green] {latest_file}")
+    latest_file = max(candidates, key=lambda path: path.stat().st_mtime)
+
+    if latest_file.name == "manifest.json":
+        console.print(f"[green]Using latest NetSniper bundle manifest:[/green] {latest_file}")
+    else:
+        console.print(f"[green]Using latest NetSniper analysis file:[/green] {latest_file}")
+
     return latest_file
 
 
@@ -517,6 +882,7 @@ def generate_markdown_report(findings_file, netsniper_data, remediation_db, prio
     lines.append("")
     lines.append("---")
     lines.append("")
+    lines.extend(netsniper_source_markdown_lines(findings_file))
     lines.append("## Executive Summary")
     lines.append("")
     lines.append(executive_summary_text(summary, validation_enabled))
@@ -676,6 +1042,8 @@ def generate_pdf_report(findings_file, netsniper_data, remediation_db, prioritiz
     story.append(Spacer(1, 0.15 * inch))
     story.append(Paragraph(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", styles["BodyText"]))
     story.append(Paragraph(f"Source File: {findings_file}", styles["Small"]))
+    for label, value in netsniper_source_pdf_rows(findings_file):
+        story.append(pdf_paragraph(f"{label}: {value}", styles["Small"]))
     story.append(Paragraph(f"Validation Enabled: {validation_enabled}", styles["Small"]))
     story.append(Spacer(1, 0.25 * inch))
 
@@ -797,6 +1165,7 @@ def run_terminal_view(netsniper_data, remediation_db, prioritized_findings):
         )
     )
 
+    show_netsniper_source_metadata()
     show_top_risks(prioritized_findings)
     show_category_summary(prioritized_findings)
 
@@ -1132,6 +1501,7 @@ def build_snapshot(findings_file, netsniper_data, prioritized_findings, intellig
         "snapshot_id": timestamp,
         "created": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "source_file": str(findings_file),
+        "netsniper_source": netsniper_source_metadata_record(findings_file),
         "validation_enabled": validation_enabled,
         "host_count": len(netsniper_data),
         "finding_count": len(finding_records),
@@ -1153,20 +1523,34 @@ def save_snapshot(snapshot, source_file=None):
     snapshot_path = SNAPSHOT_DIR / f"snapshot_{snapshot_id}.json"
     snapshot_path.write_text(json.dumps(snapshot, indent=2))
 
-    if source_file and Path(source_file).exists():
+    archive_source = None
+    snapshot_source = snapshot.get("netsniper_source", {})
+    if isinstance(snapshot_source, dict) and snapshot_source.get("analysis_path"):
+        archive_source = Path(snapshot_source["analysis_path"]).expanduser()
+    elif source_file:
+        archive_source = Path(source_file).expanduser()
+
+    if archive_source and archive_source.exists() and archive_source.is_file():
         copied_scan = SCAN_HISTORY_DIR / f"netsniper_{snapshot_id}.json"
-        shutil.copy2(source_file, copied_scan)
+        shutil.copy2(archive_source, copied_scan)
         snapshot["archived_scan"] = str(copied_scan)
         snapshot_path.write_text(json.dumps(snapshot, indent=2))
 
     metadata = load_json(WORKSPACE_METADATA)
     metadata.setdefault("snapshots", [])
 
+    snapshot_source = snapshot.get("netsniper_source", {})
+    if not isinstance(snapshot_source, dict):
+        snapshot_source = {}
+
     metadata["snapshots"].append({
         "snapshot_id": snapshot_id,
         "created": snapshot["created"],
         "path": str(snapshot_path),
         "source_file": snapshot["source_file"],
+        "netsniper_schema": snapshot_source.get("schema_version", ""),
+        "netsniper_effective_profile": snapshot_source.get("effective_profile", ""),
+        "netsniper_deltaaegis_ready": snapshot_source.get("deltaaegis_ready", ""),
         "host_count": snapshot["host_count"],
         "finding_count": snapshot["finding_count"],
         "critical": snapshot["priority_counts"].get("CRITICAL", 0),
@@ -1583,8 +1967,12 @@ def main():
     delta_mode = "--delta" in sys.argv
     dashboard_mode = "--dashboard" in sys.argv
     web_mode = "--web" in sys.argv
+    allow_unready_bundle = "--allow-unready-bundle" in sys.argv
 
-    ignored_flags = ("--validate", "--report", "--pdf", "--quiet", "--menu", "--snapshot", "--delta", "--dashboard", "--web")
+    if allow_unready_bundle:
+        os.environ["TRUEAEGIS_ALLOW_UNREADY_BUNDLE"] = "1"
+
+    ignored_flags = ("--validate", "--report", "--pdf", "--quiet", "--menu", "--snapshot", "--delta", "--dashboard", "--web", "--allow-unready-bundle")
     args = [arg for arg in sys.argv[1:] if arg not in ignored_flags]
 
     if snapshot_mode:

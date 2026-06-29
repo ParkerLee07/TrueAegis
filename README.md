@@ -69,6 +69,20 @@ Terminal UI + Local Web Dashboard
 
 ## Features
 
+
+### NetSniper v2 Bundle Compatibility
+
+TrueAegis v1.2 can read NetSniper v2 run bundles in addition to legacy `analysis_*.json` files. When a bundle contains `bundle_quality.json`, TrueAegis refuses bundles where `deltaaegis_ready` is false unless explicitly overridden for fixture/debug review.
+
+Supported NetSniper bundle contracts:
+
+- `netsniper-run-v2`
+- `netsniper-run-v3`
+- `netsniper-bundle-quality-v1`
+
+- Markdown reports, PDF reports, and platform snapshots include NetSniper source metadata for v2 bundles.
+- Local web dashboard can resolve NetSniper v2 run manifests and display schema/profile/readiness metadata.
+
 ### Structured Exposure Telemetry
 
 NetSniper outputs TrueAegis-compatible JSON:
@@ -352,9 +366,9 @@ See [`ROADMAP.md`](ROADMAP.md).
 Current suggested release label:
 
 ```text
-v1.1-beta
+v1.2.0
 
-Local LLM or Ollama-based summarization is not part of the current supported v1.1-beta release scope.
+Local LLM or Ollama-based summarization is not part of the current supported v1.2.0 release scope.
 ```
 
 TrueAegis is stable enough for controlled early release, testing, and portfolio use, but should still be considered beta software.

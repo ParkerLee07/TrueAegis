@@ -27,6 +27,8 @@ NETSNIPER_PATTERNS = (
     "findings_*.json",
 )
 
+NETSNIPER_BUNDLE_SCHEMAS = {"netsniper-run-v2", "netsniper-run-v3"}
+
 app = Flask(__name__)
 app.secret_key = "trueaegis-local-only"
 
@@ -41,7 +43,7 @@ ACTIONS = {
     "trueaegis_validate": {
         "label": "Run TrueAegis Validation",
         "command": ["trueaegis", "--validate"],
-        "note": "Runs validation against latest NetSniper JSON."
+        "note": "Runs validation against the latest NetSniper telemetry."
     },
     "trueaegis_report": {
         "label": "Generate TrueAegis Markdown + PDF Report",
@@ -121,6 +123,27 @@ def netsniper_output_dirs():
     return unique_paths(dirs)
 
 
+def netsniper_run_dirs():
+    dirs = []
+
+    for base in netsniper_base_candidates():
+        dirs.append(base / "runs")
+
+    return unique_paths(dirs)
+
+
+def find_netsniper_bundle_manifests():
+    manifests = []
+
+    for directory in netsniper_run_dirs():
+        if not directory.exists():
+            continue
+
+        manifests.extend(directory.glob("*/manifest.json"))
+
+    return unique_paths([path for path in manifests if path.exists()])
+
+
 def find_netsniper_analysis_files():
     files = []
 
@@ -139,42 +162,180 @@ def latest_file(directory, pattern):
     return files[-1] if files else None
 
 
-def latest_scan():
-    files = find_netsniper_analysis_files()
-
-    if not files:
-        return None, []
-
-    path = max(files, key=lambda item: item.stat().st_mtime)
-    data = load_json(path) or []
-
+def normalize_scan_data(data):
     if isinstance(data, dict):
-        if isinstance(data.get("hosts"), list):
-            data = data["hosts"]
-        elif isinstance(data.get("results"), list):
-            data = data["results"]
-        elif isinstance(data.get("data"), list):
-            data = data["data"]
+        for key in ("hosts", "results", "data", "scan_results"):
+            value = data.get(key)
+            if isinstance(value, list):
+                data = value
+                break
         else:
             data = []
 
     if not isinstance(data, list):
         data = []
 
-    return path, data
+    return data
+
+
+def normalize_manifest_files(files):
+    return files if isinstance(files, dict) else {}
+
+
+def bundle_file_from_manifest(bundle_dir, manifest, *keys, fallback=None):
+    files = normalize_manifest_files(manifest.get("files", {}))
+
+    for key in keys:
+        value = files.get(key)
+        if isinstance(value, str) and value.strip():
+            return bundle_dir / value
+
+    if fallback:
+        return bundle_dir / fallback
+
+    return None
+
+
+def resolve_netsniper_source(source_path):
+    source_path = Path(source_path).expanduser()
+
+    if source_path.is_dir():
+        bundle_dir = source_path
+        manifest_path = bundle_dir / "manifest.json"
+    elif source_path.name == "manifest.json":
+        manifest_path = source_path
+        bundle_dir = manifest_path.parent
+    else:
+        return {
+            "source_kind": "analysis_json",
+            "display_path": str(source_path),
+            "source_path": str(source_path),
+            "analysis_path": str(source_path),
+            "schema_version": "legacy-analysis-json",
+            "effective_profile": "",
+            "requested_profile": "",
+            "deltaaegis_ready": "",
+            "quality_warnings": [],
+            "quality_errors": [],
+        }
+
+    if not manifest_path.exists():
+        return {
+            "source_kind": "missing_bundle_manifest",
+            "display_path": str(source_path),
+            "source_path": str(source_path),
+            "bundle_dir": str(bundle_dir),
+            "manifest_path": str(manifest_path),
+            "analysis_path": "",
+            "schema_version": "",
+            "effective_profile": "",
+            "requested_profile": "",
+            "deltaaegis_ready": "",
+            "quality_warnings": [],
+            "quality_errors": ["manifest.json not found"],
+        }
+
+    manifest = load_json(manifest_path) or {}
+    schema_version = manifest.get("schema_version") or manifest.get("manifest_contract")
+
+    analysis_path = bundle_file_from_manifest(
+        bundle_dir,
+        manifest,
+        "analysis_json",
+        "analysis",
+        "findings_json",
+        fallback="analysis.json",
+    )
+
+    quality_path = bundle_file_from_manifest(
+        bundle_dir,
+        manifest,
+        "bundle_quality_json",
+        fallback="bundle_quality.json",
+    )
+
+    quality = load_json(quality_path) if quality_path and quality_path.exists() else {}
+    if not isinstance(quality, dict):
+        quality = {}
+
+    warnings = list(quality.get("warnings", []) or [])
+    errors = list(quality.get("errors", []) or [])
+
+    if schema_version not in NETSNIPER_BUNDLE_SCHEMAS:
+        warnings.append(f"Unsupported or unknown NetSniper bundle schema: {schema_version}")
+
+    if not analysis_path or not analysis_path.exists():
+        errors.append("analysis.json not found for NetSniper bundle")
+
+    return {
+        "source_kind": "netsniper_bundle",
+        "display_path": str(manifest_path),
+        "source_path": str(source_path),
+        "bundle_dir": str(bundle_dir),
+        "manifest_path": str(manifest_path),
+        "analysis_path": str(analysis_path) if analysis_path else "",
+        "quality_path": str(quality_path) if quality_path else "",
+        "schema_version": schema_version or "",
+        "manifest_contract": manifest.get("manifest_contract", ""),
+        "legacy_schema_version": manifest.get("legacy_schema_version", ""),
+        "scanner_version": manifest.get("scanner_version", ""),
+        "status": manifest.get("status", ""),
+        "scan_id": manifest.get("scan_id", ""),
+        "target": manifest.get("target") or manifest.get("network_scope", ""),
+        "requested_profile": manifest.get("requested_profile") or manifest.get("scan_profile_requested", ""),
+        "effective_profile": manifest.get("effective_profile") or manifest.get("scan_profile_effective", ""),
+        "profile_contract": manifest.get("profile_contract", ""),
+        "runtime_budget_seconds": manifest.get("profile_runtime_budget_seconds", ""),
+        "profile_duration_seconds": manifest.get("profile_duration_seconds", ""),
+        "profile_budget_exceeded": manifest.get("profile_budget_exceeded", ""),
+        "deltaaegis_ready": quality.get("deltaaegis_ready", ""),
+        "quality_schema_version": quality.get("schema_version", ""),
+        "quality_warnings": warnings,
+        "quality_errors": errors,
+    }
+
+
+def netsniper_source_candidates():
+    candidates = []
+    candidates.extend(find_netsniper_bundle_manifests())
+    candidates.extend(find_netsniper_analysis_files())
+    return unique_paths(candidates)
+
+
+def latest_scan():
+    candidates = netsniper_source_candidates()
+
+    if not candidates:
+        return None, []
+
+    path = max(candidates, key=lambda item: item.stat().st_mtime)
+    source = resolve_netsniper_source(path)
+
+    analysis_path = source.get("analysis_path")
+    data = load_json(analysis_path) if analysis_path else []
+    data = normalize_scan_data(data or [])
+
+    return Path(source.get("display_path") or str(path)), data
 
 
 def netsniper_status():
-    files = find_netsniper_analysis_files()
-    latest = max(files, key=lambda item: item.stat().st_mtime) if files else None
+    analysis_files = find_netsniper_analysis_files()
+    bundle_manifests = find_netsniper_bundle_manifests()
+    candidates = unique_paths(bundle_manifests + analysis_files)
+    latest = max(candidates, key=lambda item: item.stat().st_mtime) if candidates else None
+    latest_source = resolve_netsniper_source(latest) if latest else None
 
     return {
         "env_base": os.environ.get("NETSNIPER_BASE") or os.environ.get("NETSNIPER_HOME"),
         "base_candidates": [str(path) for path in netsniper_base_candidates()],
         "output_dirs": [str(path) for path in netsniper_output_dirs()],
-        "analysis_files": [str(path) for path in sorted(files, key=lambda item: item.stat().st_mtime, reverse=True)],
+        "run_dirs": [str(path) for path in netsniper_run_dirs()],
+        "analysis_files": [str(path) for path in sorted(analysis_files, key=lambda item: item.stat().st_mtime, reverse=True)],
+        "bundle_manifests": [str(path) for path in sorted(bundle_manifests, key=lambda item: item.stat().st_mtime, reverse=True)],
         "latest": str(latest) if latest else None,
+        "latest_source": latest_source,
     }
+
 
 
 def latest_snapshot():
