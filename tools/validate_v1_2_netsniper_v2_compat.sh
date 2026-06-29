@@ -15,6 +15,9 @@ cd "$(dirname "$0")/.." || exit 1
 python3 -m py_compile trueaegis.py \
     || fail "trueaegis.py has Python syntax errors"
 
+python3 -m py_compile web/app.py \
+    || fail "web/app.py has Python syntax errors"
+
 grep -Fq 'TRUEAEGIS_VERSION = "v1.2.0-dev"' trueaegis.py \
     || fail "TrueAegis version marker is not v1.2.0-dev"
 
@@ -142,6 +145,32 @@ if pdf_path:
         pdf_path.unlink()
     except FileNotFoundError:
         pass
+
+
+import importlib.util
+
+web_spec = importlib.util.spec_from_file_location("trueaegis_web_app", Path("web/app.py"))
+web_app = importlib.util.module_from_spec(web_spec)
+web_spec.loader.exec_module(web_app)
+
+web_source = web_app.resolve_netsniper_source(quick_dir)
+assert web_source["source_kind"] == "netsniper_bundle", web_source
+assert web_source["schema_version"] == "netsniper-run-v3", web_source
+assert web_source["effective_profile"] == "quick", web_source
+assert web_source["deltaaegis_ready"] is True, web_source
+assert web_source["analysis_path"].endswith("analysis.json"), web_source
+
+web_hosts = web_app.normalize_scan_data(web_app.load_json(web_source["analysis_path"]))
+assert isinstance(web_hosts, list), type(web_hosts)
+assert len(web_hosts) == 2, len(web_hosts)
+
+web_legacy = web_app.resolve_netsniper_source(quick_dir / "analysis.json")
+assert web_legacy["source_kind"] == "analysis_json", web_legacy
+assert web_legacy["schema_version"] == "legacy-analysis-json", web_legacy
+
+web_status = web_app.netsniper_status()
+assert "bundle_manifests" in web_status, web_status
+assert "latest_source" in web_status, web_status
 
 print("[PASS] TrueAegis NetSniper v2 bundle/report/snapshot compatibility python checks passed")
 PY

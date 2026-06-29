@@ -81,6 +81,7 @@ Supported NetSniper bundle contracts:
 - `netsniper-bundle-quality-v1`
 
 - Markdown reports, PDF reports, and platform snapshots include NetSniper source metadata for v2 bundles.
+- Local web dashboard can resolve NetSniper v2 run manifests and display schema/profile/readiness metadata.
 
 ### Structured Exposure Telemetry
 

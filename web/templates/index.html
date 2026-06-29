@@ -120,6 +120,11 @@
 
     <div class="panel wide muted-panel">
         <p><strong>Latest scan:</strong> {{ scan_path or "No NetSniper scan found" }}</p>
+        {% if netsniper_status.latest_source %}
+        <p><strong>NetSniper schema:</strong> {{ netsniper_status.latest_source.schema_version or "legacy-analysis-json" }}</p>
+        <p><strong>NetSniper profile:</strong> {{ netsniper_status.latest_source.effective_profile or "Unknown" }}</p>
+        <p><strong>DeltaAegis ready:</strong> {{ netsniper_status.latest_source.deltaaegis_ready if netsniper_status.latest_source.deltaaegis_ready != "" else "Unknown" }}</p>
+        {% endif %}
         <p><strong>Latest snapshot:</strong> {{ snapshot_path or "No snapshot found" }}</p>
         <p><strong>Latest validation:</strong> {{ validation_path or "No validation found" }}</p>
     </div>

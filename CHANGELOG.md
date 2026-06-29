@@ -13,6 +13,7 @@ TrueAegis v1.2 adds compatibility with NetSniper v2 telemetry bundles while pres
 - `TRUEAEGIS_ALLOW_UNREADY_BUNDLE=1` / `--allow-unready-bundle` override for fixture and debug review.
 - NetSniper source metadata display in terminal output.
 - Markdown reports, PDF reports, and snapshots now preserve NetSniper v2 source metadata.
+- Local web dashboard discovery now recognizes NetSniper v2 run manifests and exposes source metadata.
 - `tools/validate_v1_2_netsniper_v2_compat.sh` fixture-based compatibility validator.
 
 ### Compatibility

@@ -10,6 +10,9 @@
 
 <section class="panel">
     <p class="source-line"><strong>Source:</strong> {{ scan_path or "No scan found" }}</p>
+    {% if netsniper_status.latest_source %}
+    <p class="source-line"><strong>Schema:</strong> {{ netsniper_status.latest_source.schema_version or "legacy-analysis-json" }} | <strong>Profile:</strong> {{ netsniper_status.latest_source.effective_profile or "Unknown" }} | <strong>DeltaAegis ready:</strong> {{ netsniper_status.latest_source.deltaaegis_ready if netsniper_status.latest_source.deltaaegis_ready != "" else "Unknown" }}</p>
+    {% endif %}
 
     {% if findings %}
     <div class="table-wrap">
