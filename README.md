@@ -366,9 +366,9 @@ See [`ROADMAP.md`](ROADMAP.md).
 Current suggested release label:
 
 ```text
-v1.1-beta
+v1.2.0
 
-Local LLM or Ollama-based summarization is not part of the current supported v1.1-beta release scope.
+Local LLM or Ollama-based summarization is not part of the current supported v1.2.0 release scope.
 ```
 
 TrueAegis is stable enough for controlled early release, testing, and portfolio use, but should still be considered beta software.

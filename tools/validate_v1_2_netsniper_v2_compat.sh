@@ -18,8 +18,8 @@ python3 -m py_compile trueaegis.py \
 python3 -m py_compile web/app.py \
     || fail "web/app.py has Python syntax errors"
 
-grep -Fq 'TRUEAEGIS_VERSION = "v1.2.0-dev"' trueaegis.py \
-    || fail "TrueAegis version marker is not v1.2.0-dev"
+grep -Fq 'TRUEAEGIS_VERSION = "v1.2.0"' trueaegis.py \
+    || fail "TrueAegis version marker is not v1.2.0"
 
 grep -Fq 'NETSNIPER_BUNDLE_SCHEMAS = {"netsniper-run-v2", "netsniper-run-v3"}' trueaegis.py \
     || fail "NetSniper bundle schema allow-list missing"

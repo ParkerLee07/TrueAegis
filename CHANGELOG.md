@@ -1,6 +1,6 @@
 # Changelog
 
-## TrueAegis v1.2.0-dev
+## TrueAegis v1.2.0
 
 TrueAegis v1.2 adds compatibility with NetSniper v2 telemetry bundles while preserving legacy `analysis_*.json` workflows.
 
