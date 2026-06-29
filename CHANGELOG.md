@@ -1,5 +1,25 @@
 # Changelog
 
+## TrueAegis v1.2.0-dev
+
+TrueAegis v1.2 adds compatibility with NetSniper v2 telemetry bundles while preserving legacy `analysis_*.json` workflows.
+
+### Added
+
+- NetSniper run-bundle loading for `manifest.json` and bundle directories.
+- Compatibility with `netsniper-run-v2` and `netsniper-run-v3` manifests.
+- `bundle_quality.json` awareness for `netsniper-bundle-quality-v1`.
+- Default rejection of bundles where `deltaaegis_ready` is false.
+- `TRUEAEGIS_ALLOW_UNREADY_BUNDLE=1` / `--allow-unready-bundle` override for fixture and debug review.
+- NetSniper source metadata display in terminal output.
+- `tools/validate_v1_2_netsniper_v2_compat.sh` fixture-based compatibility validator.
+
+### Compatibility
+
+- Legacy `~/NetSniper/targets/analysis_*.json` workflows remain supported.
+- NetSniper v2 bundle fixtures can be validated from `~/NetSniper/examples/deltaaegis-fixtures`.
+
+
 ## TrueAegis v1.1-beta
 
 TrueAegis v1.1 is a major validation-accuracy update focused on producing more reliable, explainable, and actionable findings from NetSniper scan data.

@@ -69,6 +69,17 @@ Terminal UI + Local Web Dashboard
 
 ## Features
 
+
+### NetSniper v2 Bundle Compatibility
+
+TrueAegis v1.2 can read NetSniper v2 run bundles in addition to legacy `analysis_*.json` files. When a bundle contains `bundle_quality.json`, TrueAegis refuses bundles where `deltaaegis_ready` is false unless explicitly overridden for fixture/debug review.
+
+Supported NetSniper bundle contracts:
+
+- `netsniper-run-v2`
+- `netsniper-run-v3`
+- `netsniper-bundle-quality-v1`
+
 ### Structured Exposure Telemetry
 
 NetSniper outputs TrueAegis-compatible JSON:
