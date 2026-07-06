@@ -1,60 +1,44 @@
 # Roadmap
 
-## v1.0.0-beta
+This roadmap distinguishes completed release history from future work. See
+`CHANGELOG.md` for the detailed implementation record.
 
-Focus: controlled early release.
+## Released
 
-- [x] NetSniper structured telemetry
-- [x] TrueAegis validation engine
-- [x] Intelligence/correlation engine
-- [x] Markdown reports
-- [x] PDF reports
-- [x] Snapshot and delta system
-- [x] Local web dashboard
-- [x] Web control center
-- [x] Expanded knowledge base
-- [x] Improved UI
+### v1.0.0 — Initial Stable Platform
 
-## v1.0.0
+- Structured NetSniper telemetry intake
+- Safe validation engine
+- Intelligence and correlation engine
+- Markdown and PDF reports
+- Snapshots and delta comparison
+- Local terminal and web workflows
 
-Focus: stability and documentation.
+### v1.1.0 — Validation and Reporting Hardening
 
-- [ ] Clean final repository structure
-- [ ] Add screenshots and demo GIFs
-- [ ] Improve install validation
-- [ ] Add example scan data
-- [ ] Add architecture diagram
-- [ ] Improve error handling
-- [ ] Add test environment instructions
-- [ ] Publish GitHub release
+- Expanded validation states and protocol-aware checks
+- Improved evidence, metadata, reporting, and dashboard behavior
+- Additional validator and release-gate coverage
 
-## v1.1
+### v1.2.0 — NetSniper v2 Bundle Compatibility
 
-Focus: deeper intelligence.
+- `netsniper-run-v2` and `netsniper-run-v3` manifest support
+- Bundle-quality and readiness checks
+- NetSniper source metadata in reports, snapshots, and dashboard views
+- Legacy `analysis_*.json` compatibility retained
 
-- [ ] Better host role confidence scoring
-- [ ] More correlation rules
-- [ ] Environment profile scoring
-- [ ] Report language variation from knowledge base
-- [ ] Analyst question prioritization
-- [ ] More validators
+## Current Priorities
 
-## v1.2
+- Expand safe protocol-validator coverage
+- Improve fixtures and regression testing
+- Improve dashboard usability and evidence drilldown
+- Add clearer example telemetry and architecture documentation
+- Improve install, upgrade, and release validation
+- Add useful export formats without weakening evidence provenance
 
-Focus: visualization.
+## Deferred
 
-- [ ] Web-based host cards
-- [ ] Exposure heatmap
-- [ ] Snapshot trend charts
-- [ ] Attack surface relationship graph
-- [ ] Subnet grouping
-
-## Future
-
-- [ ] Real-time background job queue
-- [ ] Live command logs
-- [ ] Service fingerprinting
-- [ ] TLS metadata collection
-- [ ] Optional authentication for web UI
-- [ ] Export formats
-- [ ] Plugin system
+- Local LLM or Ollama summarization
+- Autonomous remediation
+- Unrestricted command execution
+- Features that require unsafe or unauthorized network interaction
