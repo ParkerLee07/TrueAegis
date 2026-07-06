@@ -93,7 +93,7 @@ NetSniper outputs TrueAegis-compatible JSON:
   "device_type": "Web Server",
   "severity": "MEDIUM",
   "score": 4,
-  "scanner_version": "v1.3",
+  "scanner_version": "v2.0.0",
   "timestamp": "20260528-145014",
   "findings": [
     {
@@ -309,33 +309,22 @@ TrueAegis/
 ├── install.sh
 ├── uninstall.sh
 ├── requirements.txt
+├── CHANGELOG.md
+├── ROADMAP.md
+├── SECURITY.md
+├── ETHICAL_USE.md
+├── CONTRIBUTING
+├── docs/
+├── tools/
 ├── remediations/
-│   └── exposures.json
 ├── knowledge/
-│   ├── services.json
-│   ├── correlations.json
-│   ├── role_signatures.json
-│   └── report_language.json
 ├── intelligence/
-│   ├── correlation_engine.py
-│   └── knowledge_enrichment.py
 ├── validators/
-│   ├── common.py
-│   ├── validator_engine.py
-│   ├── smb_validator.py
-│   ├── redis_validator.py
-│   ├── docker_validator.py
-│   ├── http_validator.py
-│   └── mongodb_validator.py
-├── web/
-│   ├── app.py
-│   ├── templates/
-│   └── static/
-├── reports/
-├── validation_results/
-├── workspace/
-└── screenshots/
+└── web/
 ```
+
+Generated reports, validation results, and workspace data are local runtime
+artifacts and are not required to be committed to the repository.
 
 ---
 
@@ -363,15 +352,18 @@ See [`ROADMAP.md`](ROADMAP.md).
 
 ## Status
 
-Current suggested release label:
+Current release:
 
 ```text
-v1.2.0
-
-Local LLM or Ollama-based summarization is not part of the current supported v1.2.0 release scope.
+v1.2.0 — NetSniper v2 Bundle Compatibility
 ```
 
-TrueAegis is stable enough for controlled early release, testing, and portfolio use, but should still be considered beta software.
+TrueAegis is a stable, versioned defensive tool for authorized environments
+and portfolio use. It remains actively developed and is not a replacement for
+a mature enterprise exposure-management or vulnerability-management platform.
+
+Local LLM or Ollama-based summarization is intentionally outside the supported
+v1.2.0 scope because reliable local inference is not a project requirement.
 
 ---
 
